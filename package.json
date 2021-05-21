@@ -1,0 +1,17 @@
+{
+  "name": "d-bot",
+  "version": "1.0.0",
+  "description": "My first discord bot",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "keywords": [],
+  "author": "Rainer Wittmann <r-wittmann@outlook.de>",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^12.5.3",
+    "dotenv": "^9.0.2",
+    "nodemon": "^2.0.7"
+  }
+}
