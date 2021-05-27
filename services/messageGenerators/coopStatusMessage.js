@@ -6,12 +6,14 @@ const {
 } = require("../utils.js");
 const {formatEIValue} = require("../units.js");
 
-const generateGoalsObject = (goals) => {
+const generateGoalsObject = (goals, eggsShipped) => {
     let goalsObject = [];
     goals.forEach((goal, i) => {
+        let goalAmount = goal.targetAmount;
+        let completedString = eggsShipped > goalAmount ? "completed :white_check_mark:" : "open";
         goalsObject.push({
             name: `Goal ${i + 1}`,
-            value: formatEIValue(goal.targetAmount, true),
+            value: `${formatEIValue(goalAmount, true)}\n${completedString}`,
             inline: true,
         })
     })
@@ -62,7 +64,7 @@ exports.coopStatusMessage = (coopStatus, contract) => {
                 name: 'Time to Completion',
                 value: `Expected: ${secondsToDateString(secondsExpected)}, remaining: ${secondsToDateString(secondsRemaining)}`,
             },
-            generateGoalsObject(contract.goals)
+            generateGoalsObject(contract.goals, eggsShipped)
         ],
     };
 }
