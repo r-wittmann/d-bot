@@ -61,7 +61,7 @@ const getMatchingContract = async (contractId) => {
 
   const availableContractsResponse = await fetch("https://raw.githubusercontent.com/fanaticscripter/CoopTracker/master/data/contracts.json")
   const availableContracts = await availableContractsResponse.json();
-  const matchingContract = availableContracts.find(
+  const matchingContract = availableContracts.slice().reverse().find(
       contract => {
         return contract.id === contractId
       }
