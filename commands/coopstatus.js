@@ -1,5 +1,5 @@
-const api = require("../services/api.js");
-const {getMatchingContract} = require("../services/api.js");
+const {coopStatusMessage} = require("../services/messageGenerators/coopStatusMessage.js");
+const {getMatchingContract, requestCoopStatus} = require("../services/api.js");
 
 module.exports = {
     name: "coopstatus",
@@ -13,12 +13,14 @@ module.exports = {
 
         // find the matching contract from mk2's list
         const matchingContract = await getMatchingContract(contractId);
-        if(!matchingContract) {
+        if (!matchingContract) {
             message.channel.send(`The contract ID seems to be wrong. No contract found with id ${contractId}`);
             return;
         }
 
         // get coop status from auxbrain API
-        const coopStatusObject = await api.requestCoopStatus(contractId, coopCode);
+        const coopStatusObject = await requestCoopStatus(contractId, coopCode);
+
+        message.channel.send({embed: coopStatusMessage(coopStatusObject, matchingContract)});
     },
 };
