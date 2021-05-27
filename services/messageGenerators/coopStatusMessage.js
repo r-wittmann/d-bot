@@ -40,7 +40,7 @@ exports.coopStatusMessage = (coopStatus, contract) => {
     return {
         color: 0x0099ff,
         title: `${contractName} (${contractId})`,
-        description: description,
+        description: `${description}\n[Coop Tracker](https://eicoop.netlify.app/${contractId}/${coopId})`,
         fields: [
             {
                 name: 'Coop Code',
