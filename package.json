@@ -4,8 +4,7 @@
   "description": "My first discord bot",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js",
-    "deploy": "git push heroku master"
+    "start": "nodemon index.js"
   },
   "keywords": [],
   "author": "Rainer Wittmann <r-wittmann@outlook.de>",
