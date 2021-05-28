@@ -14,7 +14,7 @@ module.exports = {
         // find the matching contract from mk2's list
         const matchingContract = await getMatchingContract(contractId);
         if (!matchingContract) {
-            message.channel.send(`The contract ID seems to be wrong. No contract found with id ${contractId}`);
+            message.channel.send(`The contract ID seems to be wrong. Or the contract information was not added to my database yet. No contract found with id ${contractId}`);
             return;
         }
 

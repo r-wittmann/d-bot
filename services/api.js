@@ -61,11 +61,16 @@ const getMatchingContract = async (contractId) => {
 
   const availableContractsResponse = await fetch("https://raw.githubusercontent.com/fanaticscripter/CoopTracker/master/data/contracts.json")
   const availableContracts = await availableContractsResponse.json();
-  const matchingContract = availableContracts.slice().reverse().find(
+  // as some of the contract ids don't get updated for the legacy run,
+  // only the last 10 weeks (30 contracts) are considered.
+  const matchingContract = availableContracts.slice(-30).reverse().find(
       contract => {
         return contract.id === contractId
       }
   );
+  if (!matchingContract) {
+    return;
+  }
   return decodeService.decodeMessage(Contract, matchingContract.proto);
 }
 exports.getMatchingContract = getMatchingContract;
