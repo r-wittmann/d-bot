@@ -3,8 +3,8 @@ const {
     calculateNeededProduction,
     calculateTimeToCompletion,
     secondsToDateString
-} = require("../utils.js");
-const {formatEIValue} = require("../units.js");
+} = require("../services/utils.js");
+const {formatEIValue} = require("../services/units.js");
 
 const generateGoalsObject = (goals, eggsShipped) => {
     let goalsObject = [];
@@ -20,7 +20,7 @@ const generateGoalsObject = (goals, eggsShipped) => {
     return goalsObject;
 }
 
-exports.coopStatusMessage = (coopStatus, contract) => {
+exports.getCoopStatusMessage = (coopStatus, contract) => {
     const contractName = contract.name;
     const contractId = contract.identifier;
     const description = contract.description;

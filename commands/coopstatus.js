@@ -1,5 +1,9 @@
-const {coopStatusMessage} = require("../services/messageGenerators/coopStatusMessage.js");
-const {getMatchingContract, requestCoopStatus} = require("../services/api.js");
+const {getMatchingContract} = require("../controllers/matchingContract.js");
+const {getCoopStatus} = require("../controllers/coopStatus.js");
+
+const {getCoopNotFoundMessage} = require("../messageGenerators/coopNotFoundMessage.js");
+const {getContractNotFoundMessage} = require("../messageGenerators/contractNotFoundMessage.js");
+const {getCoopStatusMessage} = require("../messageGenerators/coopStatusMessage.js");
 
 module.exports = {
     name: "coopstatus",
@@ -11,16 +15,22 @@ module.exports = {
         const contractId = args[0];
         const coopCode = args[1];
 
-        // find the matching contract from mk2's list
-        const matchingContract = await getMatchingContract(contractId);
-        if (!matchingContract) {
-            message.channel.send(`The contract ID seems to be wrong. Or the contract information was not added to my database yet. No contract found with id ${contractId}`);
+        // call matching contract controller to get the contract information
+        const contract = await getMatchingContract(contractId);
+        // if no contract is found, return a message to the channel and exit the command
+        if (!contract) {
+            message.channel.send(getContractNotFoundMessage(contractId));
             return;
         }
 
-        // get coop status from auxbrain API
-        const coopStatusObject = await requestCoopStatus(contractId, coopCode);
+        // get coop status
+        const coopStatus = await getCoopStatus(contractId, coopCode);
+        // if the coop isn't found, return a message to the channel and exit the command
+        if (!coopStatus) {
+            message.channel.send(getCoopNotFoundMessage(contractId, coopCode));
+            return;
+        }
 
-        message.channel.send({embed: coopStatusMessage(coopStatusObject, matchingContract)});
+        message.channel.send({embed: getCoopStatusMessage(coopStatus, contract)});
     },
 };
