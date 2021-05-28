@@ -28,7 +28,7 @@ exports.getCoopStatus = async (contractId, coopCode) => {
     } catch (e) {
         return;
     }
-    
+
     // decode the response an return
     return await decodeService.decodeMessage(ContractCoopStatusResponse, encodedResponsePayload, true);
 }
