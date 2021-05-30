@@ -23,7 +23,7 @@ module.exports = {
         const activeCoops = await getActiveCoops(message);
 
         // call controller to handle the adding
-        const responseMessage = await addActiveCoop(contractId, coopCode, activeCoops);
+        const responseMessage = await addActiveCoop(message, contractId, coopCode, activeCoops);
 
         // send response message to the bot channel
         message.channel.send(responseMessage);

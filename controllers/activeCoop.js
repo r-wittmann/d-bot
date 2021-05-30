@@ -22,7 +22,7 @@ exports.getActiveCoops = async (message) => {
     return activeCoops;
 }
 
-exports.addActiveCoop = async (contractId, coopCode, activeCoops) => {
+exports.addActiveCoop = async (message, contractId, coopCode, activeCoops) => {
     // check, if the sent contract already exists in our list
     const existingContractMessage = activeCoops.find(coop => coop.contractId === contractId);
     if (existingContractMessage) {
@@ -52,7 +52,7 @@ exports.addActiveCoop = async (contractId, coopCode, activeCoops) => {
         return getContractNotFoundMessage(contractId);
     }
     // send coop information to the channel
-    existingContractMessage.m.client.channels.cache.get(process.env.ACTIVE_COOP_CHANNEL_ID)
+    message.client.channels.cache.get(process.env.ACTIVE_COOP_CHANNEL_ID)
         .send({embed: getActiveCoopsMessage(contract.name, contractId, [coopCode])});
 
     return ("Contract and Coop added");
