@@ -10,8 +10,6 @@ exports.getActiveCoops = async (message) => {
                 // the coopCodes are delimited by " in the fields names
                 const coopCodes = m.embeds[0].fields.map(field => field.name.split('"')[1]);
 
-                console.log(contractName, contractId, coopCodes);
-
                 activeCoops.push({ m, contractName, contractId, coopCodes });
             })
         });
