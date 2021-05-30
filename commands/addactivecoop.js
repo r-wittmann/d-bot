@@ -1,9 +1,6 @@
+const {addActiveCoop} = require("../controllers/activeCoop.js");
 const {getActiveCoops} = require("../controllers/activeCoop.js");
-const {getMatchingContract} = require("../controllers/matchingContract.js");
 
-const {getActiveCoopsMessage} = require("../messageGenerators/activeCoopsMessage.js");
-const {getContractNotFoundMessage} = require("../messageGenerators/contractNotFoundMessage.js");
-const {getCoopExistsInActiveCoopsMessage} = require("../messageGenerators/coopExistsInActiveCoopsMessage.js");
 const {getWrongChannelAskModMessage} = require("../messageGenerators/wrongChannelAskModMessage.js");
 
 module.exports = {
@@ -25,40 +22,10 @@ module.exports = {
         // extract active coops from the "active coops" channel
         const activeCoops = await getActiveCoops(message);
 
-        // check, if the sent contract already exists in our list
-        const existingContractMessage = activeCoops.find(coop => coop.contractId === contractId);
-        if (existingContractMessage) {
-            // if coop already exists, send message about it and exit command
-            if (existingContractMessage.coopCodes.includes(coopCode)) {
-                message.channel.send(getCoopExistsInActiveCoopsMessage(contractId, coopCode));
-                return;
-            }
-            // add new coop to coopCodes
-            const coopCodes = existingContractMessage.coopCodes.concat([coopCode]);
-            // update existing message by creating new Content and exit command
-            await existingContractMessage.m.edit({
-                embed:
-                    getActiveCoopsMessage(
-                        existingContractMessage.contractName,
-                        existingContractMessage.contractId,
-                        coopCodes
-                    )
-            });
+        // call controller to handle the adding
+        const responseMessage = await addActiveCoop(contractId, coopCode, activeCoops);
 
-            message.channel.send("Coop added");
-            return;
-        }
-
-        // get the contract information
-        const contract = await getMatchingContract(contractId);
-        // if no contract is found, return a message to the channel and exit the command
-        if (!contract) {
-            message.channel.send(getContractNotFoundMessage(contractId));
-            return;
-        }
-        // send coop information to the channel
-        message.client.channels.cache.get(process.env.ACTIVE_COOP_CHANNEL_ID)
-            .send({embed: getActiveCoopsMessage(contract.name, contractId, [coopCode])});
-        message.channel.send("Coop Added");
+        // send response message to the bot channel
+        message.channel.send(responseMessage);
     },
 };
