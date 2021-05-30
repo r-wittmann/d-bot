@@ -10,7 +10,7 @@ const generateCoopFields = (coops) => {
     return coopObject;
 }
 
-exports.getActiveCoopsMessage = (contractName, contractId, coopCodes) => {
+exports.getActiveCoopsMessage = (contractName, contractId, coopCodes, maxCoopSize) => {
 
     return {
         color: 0x0099ff,
@@ -19,5 +19,8 @@ exports.getActiveCoopsMessage = (contractName, contractId, coopCodes) => {
         fields: [
             generateCoopFields(coopCodes)
         ],
+        footer: {
+            text: `Max coop size: ${maxCoopSize}`
+        }
     };
 }

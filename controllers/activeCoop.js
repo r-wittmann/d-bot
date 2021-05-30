@@ -15,8 +15,10 @@ exports.getActiveCoops = async (message) => {
                 const contractId = m.embeds[0].description.split("(").pop().split(")")[0];
                 // the coopCodes are delimited by " in the fields names
                 const coopCodes = m.embeds[0].fields.map(field => field.name.split('"')[1]);
+                // the max coop size is in the footer
+                const maxCoopSize = m.embeds[0].footer.text.split(" ").pop();
 
-                activeCoops.push({m, contractName, contractId, coopCodes});
+                activeCoops.push({m, contractName, contractId, coopCodes, maxCoopSize});
             })
         });
     return activeCoops;
@@ -38,7 +40,8 @@ exports.addActiveCoop = async (message, contractId, coopCode, activeCoops) => {
                 getActiveCoopsMessage(
                     existingContractMessage.contractName,
                     existingContractMessage.contractId,
-                    coopCodes
+                    coopCodes,
+                    existingContractMessage.maxCoopSize
                 )
         });
 
@@ -53,7 +56,7 @@ exports.addActiveCoop = async (message, contractId, coopCode, activeCoops) => {
     }
     // send coop information to the channel
     message.client.channels.cache.get(process.env.ACTIVE_COOP_CHANNEL_ID)
-        .send({embed: getActiveCoopsMessage(contract.name, contractId, [coopCode])});
+        .send({embed: getActiveCoopsMessage(contract.name, contractId, [coopCode],contract.maxCoopSize)});
 
     return ("Contract and Coop added");
 }
@@ -77,7 +80,8 @@ exports.removeActiveCoop = async (contractId, coopCode, activeCoops) => {
                     getActiveCoopsMessage(
                         existingContractMessage.contractName,
                         existingContractMessage.contractId,
-                        existingContractMessage.coopCodes
+                        existingContractMessage.coopCodes,
+                        existingContractMessage.maxCoopSize
                     )
             });
             // confirm the action in the bot channel
@@ -87,4 +91,5 @@ exports.removeActiveCoop = async (contractId, coopCode, activeCoops) => {
         // notify bot channel that coop was not there
         return `Coop code ${coopCode} not found for contract ${contractId}`;
     }
+    return `Contract ${contractId} not found in #active-coop channel`;
 }
