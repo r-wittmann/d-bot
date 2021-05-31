@@ -105,7 +105,11 @@ exports.updateActiveCoops = async (activeCoops) => {
         for (const coopCode of activeContract.coopCodes) {
             // get coop status
             const coopStatus = await getCoopStatus(activeContract.contractId, coopCode);
-            coopSizes.push(coopStatus.contributors.length);
+            if (!coopStatus){
+                coopSizes.push("Coop does not exist");
+            } else {
+                coopSizes.push(coopStatus.contributors.length);
+            }
         }
 
         await activeContract.m.edit({
