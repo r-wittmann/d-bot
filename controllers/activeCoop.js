@@ -33,7 +33,8 @@ exports.addActiveCoop = async (message, contractId, coopCode, activeCoops) => {
     if (existingContractMessage) {
         // if coop already exists, send message about it and exit command
         if (existingContractMessage.coopCodes.includes(coopCode)) {
-            return getCoopExistsInActiveCoopsMessage(contractId, coopCode);
+            message.channel.send(getCoopExistsInActiveCoopsMessage(contractId, coopCode));
+            return false;
         }
         // add new coop to coopCodes
         const coopCodes = existingContractMessage.coopCodes.concat([coopCode]);
@@ -49,23 +50,26 @@ exports.addActiveCoop = async (message, contractId, coopCode, activeCoops) => {
                 )
         });
 
-        return "Coop added";
+        message.channel.send("Coop added");
+        return true;
     }
 
     // get the contract information
     const contract = await getMatchingContract(contractId);
     // if no contract is found, return a message to the channel and exit the command
     if (!contract) {
-        return getContractNotFoundMessage(contractId);
+        message.channel.send(getContractNotFoundMessage(contractId));
+        return false;
     }
     // send coop information to the channel
-    message.client.channels.cache.get(process.env.ACTIVE_COOP_CHANNEL_ID)
+    await message.client.channels.cache.get(process.env.ACTIVE_COOP_CHANNEL_ID)
         .send({embed: getActiveCoopsMessage(contract.name, contractId, [coopCode],contract.maxCoopSize)});
 
-    return ("Contract and Coop added");
+    message.channel.send("Contract and Coop added");
+    return true;
 }
 
-exports.removeActiveCoop = async (contractId, coopCode, activeCoops) => {
+exports.removeActiveCoop = async (message, contractId, coopCode, activeCoops) => {
     // check for the existence of the contract in our list
     const existingContractMessage = activeCoops.find(coop => coop.contractId === contractId);
     if (existingContractMessage) {
@@ -75,8 +79,9 @@ exports.removeActiveCoop = async (contractId, coopCode, activeCoops) => {
             existingContractMessage.coopCodes = existingContractMessage.coopCodes.filter(cc => cc !== coopCode);
             // remove contract from the channel, if the coop was the last one
             if (existingContractMessage.coopCodes.length === 0) {
-                existingContractMessage.m.delete();
-                return "Coop and Contract removed";
+                await existingContractMessage.m.delete();
+                message.channel.send("Coop and Contract removed");
+                return true;
             }
 
             await existingContractMessage.m.edit({
@@ -90,13 +95,16 @@ exports.removeActiveCoop = async (contractId, coopCode, activeCoops) => {
                     )
             });
             // confirm the action in the bot channel
-            return "Coop removed";
+            message.channel.send("Coop removed");
+            return true;
         }
 
         // notify bot channel that coop was not there
-        return `Coop code ${coopCode} not found for contract ${contractId}`;
+        message.channel.send(`Coop code ${coopCode} not found for contract ${contractId}`);
+        return false;
     }
-    return `Contract ${contractId} not found in #active-coop channel`;
+    message.channel.send(`Contract ${contractId} not found in #active-coop channel`);
+    return false;
 }
 
 exports.updateActiveCoops = async (activeCoops) => {

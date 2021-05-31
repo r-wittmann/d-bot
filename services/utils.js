@@ -65,3 +65,7 @@ exports.secondsToDateString = (seconds) => {
 
     return `${days}d${hours}h${minutes}m`;
 }
+
+exports.getChannelNameByContractNameAndCoopCode = (contractName, coopCode) => {
+    return `${contractName.toLowerCase().replace(" ", "-")}-${coopCode}`;
+}

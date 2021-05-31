@@ -1,4 +1,5 @@
 const {addActiveCoop} = require("../controllers/activeCoop.js");
+const {createActiveCoopChannel} = require("../controllers/coopChannels.js");
 const {getActiveCoops} = require("../controllers/activeCoop.js");
 
 const {getWrongChannelAskModMessage} = require("../messageGenerators/wrongChannelAskModMessage.js");
@@ -23,9 +24,11 @@ module.exports = {
         const activeCoops = await getActiveCoops(message.client);
 
         // call controller to handle the adding
-        const responseMessage = await addActiveCoop(message, contractId, coopCode, activeCoops);
+        const success = await addActiveCoop(message, contractId, coopCode, activeCoops);
 
-        // send response message to the bot channel
-        message.channel.send(responseMessage);
+        // if coop was added successfully, create a channel for the coop
+        if (success) {
+            await createActiveCoopChannel(message, contractId, coopCode);
+        }
     },
 };
