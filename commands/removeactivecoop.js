@@ -20,7 +20,7 @@ module.exports = {
         }
 
         // extract active coops from the "active coops" channel
-        const activeCoops = await getActiveCoops(message);
+        const activeCoops = await getActiveCoops(message.client);
 
         // call the controller to handle the removing
         const responseMessage = await removeActiveCoop(contractId, coopCode, activeCoops);

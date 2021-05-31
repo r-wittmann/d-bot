@@ -20,7 +20,7 @@ module.exports = {
         }
 
         // extract active coops from the "active coops" channel
-        const activeCoops = await getActiveCoops(message);
+        const activeCoops = await getActiveCoops(message.client);
 
         // call controller to handle the adding
         const responseMessage = await addActiveCoop(message, contractId, coopCode, activeCoops);

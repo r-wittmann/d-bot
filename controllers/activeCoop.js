@@ -1,15 +1,18 @@
+const {getCoopStatus} = require("./coopStatus.js");
 const {getMatchingContract} = require("./matchingContract.js");
 
 const {getActiveCoopsMessage} = require("../messageGenerators/activeCoopsMessage.js");
 const {getContractNotFoundMessage} = require("../messageGenerators/contractNotFoundMessage.js");
 const {getCoopExistsInActiveCoopsMessage} = require("../messageGenerators/coopExistsInActiveCoopsMessage.js");
 
-exports.getActiveCoops = async (message) => {
+exports.getActiveCoops = async (client) => {
     // get all messages from the "active-coop" channel
     let activeCoops = [];
-    await message.client.channels.cache.get(process.env.ACTIVE_COOP_CHANNEL_ID).messages.fetch({limit: 10})
+    await client.channels.cache.get(process.env.ACTIVE_COOP_CHANNEL_ID).messages.fetch({limit: 10})
         .then(messages => {
             messages.forEach(m => {
+                // ignore messages without embeds
+                if (m.embeds.length === 0) return;
                 const contractName = m.embeds[0].title;
                 // the contract id is in brackets in the description
                 const contractId = m.embeds[0].description.split("(").pop().split(")")[0];
@@ -41,7 +44,8 @@ exports.addActiveCoop = async (message, contractId, coopCode, activeCoops) => {
                     existingContractMessage.contractName,
                     existingContractMessage.contractId,
                     coopCodes,
-                    existingContractMessage.maxCoopSize
+                    existingContractMessage.maxCoopSize,
+                    null
                 )
         });
 
@@ -81,7 +85,8 @@ exports.removeActiveCoop = async (contractId, coopCode, activeCoops) => {
                         existingContractMessage.contractName,
                         existingContractMessage.contractId,
                         existingContractMessage.coopCodes,
-                        existingContractMessage.maxCoopSize
+                        existingContractMessage.maxCoopSize,
+                        null
                     )
             });
             // confirm the action in the bot channel
@@ -92,4 +97,26 @@ exports.removeActiveCoop = async (contractId, coopCode, activeCoops) => {
         return `Coop code ${coopCode} not found for contract ${contractId}`;
     }
     return `Contract ${contractId} not found in #active-coop channel`;
+}
+
+exports.updateActiveCoops = async (activeCoops) => {
+    for (const activeContract of activeCoops) {
+        let coopSizes = [];
+        for (const coopCode of activeContract.coopCodes) {
+            // get coop status
+            const coopStatus = await getCoopStatus(activeContract.contractId, coopCode);
+            coopSizes.push(coopStatus.contributors.length);
+        }
+
+        await activeContract.m.edit({
+            embed:
+                getActiveCoopsMessage(
+                    activeContract.contractName,
+                    activeContract.contractId,
+                    activeContract.coopCodes,
+                    activeContract.maxCoopSize,
+                    coopSizes
+                )
+        });
+    }
 }
