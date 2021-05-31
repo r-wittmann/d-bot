@@ -23,8 +23,7 @@ module.exports = {
         // extract active coops from the "active coops" channel
         const activeCoops = await getActiveCoops(message.client);
 
-
-
+        // try to move the channel to the archive
         try {
             await moveActiveCoopChannelToArchive(message, contractId, coopCode);
             message.channel.send("Channel moved To Archive");
@@ -33,7 +32,7 @@ module.exports = {
             return;
         }
 
-        // call the controller to handle the removing
+        // call the controller to handle the removing from the active-coop channel
         await removeActiveCoop(message, contractId, coopCode, activeCoops);
     },
 };

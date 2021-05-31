@@ -23,15 +23,11 @@ exports.createActiveCoopChannel = async (message, contractId, coopCode) => {
 
 exports.moveActiveCoopChannelToArchive = async (message, contractId, coopCode) => {
     const activeCoops = await getActiveCoops(message.client);
-    console.log(activeCoops);
     const contractName = activeCoops.find(coop => coop.contractId === contractId).contractName;
-    console.log(contractName);
 
     // get all channels in coop category
     const activeChannels = await message.client.channels.cache;
-    console.log("active channels collected");
     const channelToMove = activeChannels.find(channel => channel.name === getChannelNameByContractNameAndCoopCode(contractName, coopCode));
-    console.log(channelToMove);
     await channelToMove.edit({parentID: process.env.ARCHIVE_CATEGORY_ID});
 }
 
