@@ -21,8 +21,10 @@ client.once('ready', () => {
     console.log('Ready!');
 });
 
+setInterval(() => client.commands.get("updateactivecoops").execute(client), 30000);
+
 client.on('message', message => {
-    if (!message.content.startsWith(prefix) || message.author.bot) return;
+    if (!message.content.startsWith(prefix)) return;
 
     const args = message.content.slice(prefix.length).trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
@@ -40,6 +42,8 @@ client.on('message', message => {
 
     if (command.name === "help") {
         command.execute(message, client.commands);
+    } else if (command.name === "updateactivecoops") {
+        command.execute(client);
     } else {
         try {
             command.execute(message, args);
