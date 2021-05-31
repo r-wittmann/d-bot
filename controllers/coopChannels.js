@@ -4,8 +4,8 @@ const {getActiveCoops} = require("./activeCoop.js");
 exports.createActiveCoopChannel = async (message, contractId, coopCode) => {
     const updatedActiveCoops = await getActiveCoops(message.client);
     const contractName = updatedActiveCoops.find(coop => coop.contractId === contractId).contractName;
-    const createdChannel = await message.guild.channels.create(`${contractName} - ${coopCode}`, {
-        type: "text", //This create a text channel, you can make a voice one too, by changing "text" to "voice"
+    const createdChannel = await message.guild.channels.create(getChannelNameByContractNameAndCoopCode(contractName, coopCode), {
+        type: "text",
         permissionOverwrites: [
             {
                 id: message.guild.roles.everyone, //To make it be seen by a certain role, user an ID instead
