@@ -12,8 +12,7 @@ exports.createActiveCoopChannel = async (message, contractId, coopCode) => {
                 allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'READ_MESSAGE_HISTORY'],
             }
         ],
-        parent: process.env.COOP_CATEGORY_ID,
-        position: 2
+        parent: process.env.COOP_CATEGORY_ID
     })
 
     await createdChannel.send(`$coopstatus ${contractId} ${coopCode}`);
