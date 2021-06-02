@@ -6,13 +6,8 @@ exports.createActiveCoopChannel = async (message, contractId, coopCode) => {
     const contractName = updatedActiveCoops.find(coop => coop.contractId === contractId).contractName;
     const createdChannel = await message.guild.channels.create(getChannelNameByContractNameAndCoopCode(contractName, coopCode), {
         type: "text",
-        permissionOverwrites: [
-            {
-                id: message.guild.roles.everyone, //To make it be seen by a certain role, user an ID instead
-                allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'READ_MESSAGE_HISTORY'],
-            }
-        ],
-        parent: process.env.COOP_CATEGORY_ID
+        parent: process.env.COOP_CATEGORY_ID,
+        position: 100
     })
 
     await createdChannel.send(`$coopstatus ${contractId} ${coopCode}`);
@@ -26,7 +21,10 @@ exports.moveActiveCoopChannelToArchive = async (message, contractId, coopCode) =
 
     // get all channels in coop category
     const activeChannels = await message.client.channels.cache;
-    const channelToMove = activeChannels.find(channel => channel.name === getChannelNameByContractNameAndCoopCode(contractName, coopCode));
+    const channelToMove = activeChannels.find(channel =>
+        channel.name === getChannelNameByContractNameAndCoopCode(contractName, coopCode)
+        && channel.parent.id === process.env.COOP_CATEGORY_ID
+    );
     await channelToMove.edit({parentID: process.env.ARCHIVE_CATEGORY_ID});
 }
 
