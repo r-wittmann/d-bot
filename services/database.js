@@ -31,3 +31,10 @@ exports.removeMember = async (eiId, discordId) => {
     await Member.findOneAndRemove({$or: [{eiId}, {discordId}]});
     await mongoose.disconnect();
 }
+
+exports.getMembers = async () => {
+    await openDatabaseConnection();
+    const members = await Member.find({});
+    await mongoose.disconnect();
+    return members;
+}
