@@ -81,6 +81,10 @@ exports.removeActiveCoop = async (message, contractId, coopCode, activeCoops) =>
             if (existingContractMessage.coopCodes.length === 0) {
                 await existingContractMessage.m.delete();
                 message.channel.send("Coop and Contract removed");
+
+                // add the coop to the completed-coop channel
+                await addCompletedCoopToChannel(message, existingContractMessage.contractName, coopCode);
+
                 return true;
             }
 
@@ -96,6 +100,10 @@ exports.removeActiveCoop = async (message, contractId, coopCode, activeCoops) =>
             });
             // confirm the action in the bot channel
             message.channel.send("Coop removed");
+
+            // add the coop to the completed-coop channel
+            await addCompletedCoopToChannel(message, existingContractMessage.contractName, coopCode);
+
             return true;
         }
 
@@ -105,6 +113,12 @@ exports.removeActiveCoop = async (message, contractId, coopCode, activeCoops) =>
     }
     message.channel.send(`Contract ${contractId} not found in #active-coop channel`);
     return false;
+}
+
+const addCompletedCoopToChannel = async (message, contractName, coopCode) => {
+    // add the coop to the completed-coop channel
+    const completedCoopChannel = await message.client.channels.cache.get(process.env.COMPLETED_COOP_CHANNEL_ID);
+    completedCoopChannel.send(`${contractName}: \`${coopCode}\``);
 }
 
 exports.updateActiveCoops = async (activeCoops) => {
