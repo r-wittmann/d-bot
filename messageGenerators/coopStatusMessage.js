@@ -20,6 +20,14 @@ const generateGoalsObject = (goals, eggsShipped) => {
     return goalsObject;
 }
 
+const generateParticipantsObject = (participants) => {
+    return {
+        name: "Participants",
+        value: participants.map(participants => participants.userName).join(", "),
+        inline: false,
+    }
+}
+
 exports.getCoopStatusMessage = (coopStatus, contract) => {
     const contractName = contract.name;
     const contractId = contract.identifier;
@@ -27,7 +35,8 @@ exports.getCoopStatusMessage = (coopStatus, contract) => {
 
     const coopId = coopStatus.coopIdentifier
     const maxCoopSize = contract.maxCoopSize;
-    const curCoopSize = coopStatus.contributors.length;
+    const participants = coopStatus.contributors;
+    const curCoopSize = participants.length;
     const finalGoalAmount = contract.goals.slice(-1).pop().targetAmount;
 
     const eggsShipped = coopStatus.totalAmount;
@@ -55,16 +64,28 @@ exports.getCoopStatusMessage = (coopStatus, contract) => {
             {
                 name: 'Eggs Shipped',
                 value: `${formatEIValue(eggsShipped)} of ${formatEIValue(finalGoalAmount, true)}`,
+                inline: true,
             },
             {
                 name: 'Hourly Production',
                 value: `Current: ${formatEIValue(currentProd)}/h, required: ${formatEIValue(neededProd)}/h`,
+                inline: true,
             },
             {
                 name: 'Time to Completion',
                 value: `Expected: ${secondsToDateString(secondsExpected)}, remaining: ${secondsToDateString(secondsRemaining)}`,
+                inline: true,
             },
-            generateGoalsObject(contract.goals, eggsShipped)
+            {
+                name: '\u200B',
+                value: '\u200B'
+            },
+            generateGoalsObject(contract.goals, eggsShipped),
+            {
+                name: '\u200B',
+                value: '\u200B'
+            },
+            generateParticipantsObject(participants)
         ],
     };
 }

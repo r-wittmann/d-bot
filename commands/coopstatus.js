@@ -31,6 +31,6 @@ module.exports = {
             return;
         }
 
-        message.channel.send({embed: getCoopStatusMessage(coopStatus, contract)});
+        await message.channel.send({embed: getCoopStatusMessage(coopStatus, contract)});
     },
 };
