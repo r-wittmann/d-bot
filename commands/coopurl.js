@@ -1,7 +1,5 @@
 module.exports = {
     name: "coopurl",
-    args: true,
-    argsLength: 2,
     usage: "<contract-id> <coop-name>",
     description: "Returns the coop tracking url from mk2",
     execute(message, args) {

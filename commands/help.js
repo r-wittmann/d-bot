@@ -1,7 +1,5 @@
 module.exports = {
     name: "help",
-    args: false,
-    argsLength: 0,
     usage: "",
     description: "Returns a list of all commands including their descriptions and usage",
     execute(message, commands) {

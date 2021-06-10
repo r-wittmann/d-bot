@@ -6,8 +6,6 @@ const {getWrongChannelAskModMessage} = require("../messageGenerators/wrongChanne
 
 module.exports = {
     name: "addactivecoop",
-    args: true,
-    argsLength: 2,
     usage: "<contract-id> <coop-name>",
     description: "Adds a coop to the list of active coops. This command is only available for the mods in a special channel.",
     async execute(message, args) {

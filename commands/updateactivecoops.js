@@ -4,8 +4,6 @@ const {updateActiveCoops} = require("../controllers/activeCoop.js");
 
 module.exports = {
     name: "updateactivecoops",
-    args: false,
-    argsLength: 0,
     usage: "",
     description: "Updates the active coops in the #active-coops channel.",
     async execute(client) {

@@ -32,14 +32,6 @@ client.on('message', message => {
     const command = client.commands.get(commandName)
     if (!command) return;
 
-    if (command.args && command.argsLength !== args.length) {
-        let reply = `You didn't use this command correctly, ${message.author}!`;
-        if (command.usage) {
-            reply += `\nThe proper usage would be: \`${prefix}${command.name} ${command.usage}\``;
-        }
-        return message.channel.send(reply);
-    }
-
     if (command.name === "help") {
         command.execute(message, client.commands);
     } else if (command.name === "updateactivecoops") {

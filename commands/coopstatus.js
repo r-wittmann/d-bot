@@ -7,8 +7,6 @@ const {getCoopStatusMessage} = require("../messageGenerators/coopStatusMessage.j
 
 module.exports = {
     name: "coopstatus",
-    args: true,
-    argsLength: 2,
     usage: "<contract-id> <coop-name>",
     description: "Returns the current coop status",
     async execute(message, args) {

@@ -6,8 +6,6 @@ const {getWrongChannelAskModMessage} = require("../messageGenerators/wrongChanne
 
 module.exports = {
     name: "removeactivecoop",
-    args: true,
-    argsLength: 2,
     usage: "<contract-id> <coop-name>",
     description: "Removes a coop to the list of active coops. This command is only available for the mods in a special channel.",
     async execute(message, args) {
