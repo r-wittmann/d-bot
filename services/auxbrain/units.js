@@ -1,4 +1,4 @@
-const {trimTrailingZeros} = require("./utils");
+const {trimTrailingZeros} = require("../utils.js");
 
 // https://egg-inc.fandom.com/wiki/Order_of_Magnitude
 const units = [

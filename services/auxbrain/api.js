@@ -1,5 +1,5 @@
 const fetch = require("node-fetch");
-const userInfo = require("./version");
+const userInfo = require("./version.js");
 
 const API_ROOT = "https://afx-2-dot-auxbrainhome.appspot.com";
 

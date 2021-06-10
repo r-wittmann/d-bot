@@ -4,7 +4,7 @@ const {
     calculateTimeToCompletion,
     secondsToDateString
 } = require("../services/utils.js");
-const {formatEIValue} = require("../services/units.js");
+const {formatEIValue} = require("../services/auxbrain/units.js");
 
 const generateGoalsObject = (goals, eggsShipped) => {
     let goalsObject = [];

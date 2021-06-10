@@ -1,7 +1,7 @@
 const atob = require("atob");
 const protobuf = require("protobufjs");
 
-const utils = require("./utils.js");
+const utils = require("../utils.js");
 
 const decodeMessage = async (message, encoded, authenticated = false) => {
     if (!encoded) return;

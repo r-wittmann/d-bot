@@ -1,7 +1,7 @@
 const protobuf = require("protobufjs");
 
-const api = require("../services/api.js");
-const {decodeMessage} = require("../services/decode.js");
+const api = require("../services/auxbrain/api.js");
+const {decodeMessage} = require("../services/auxbrain/decode.js");
 
 exports.getMatchingContract = async (contractId) => {
     const root = await protobuf.load("./protobuf/ei.proto");
