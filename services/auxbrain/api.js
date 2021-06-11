@@ -1,9 +1,13 @@
 const fetch = require("node-fetch");
 const userInfo = require("./version.js");
+const protobuf = require("protobufjs");
+const encodeService = require("./encode.js");
+const decodeService = require("./decode.js");
+const {CLIENT_VERSION} = require("./version.js");
 
 const API_ROOT = "https://afx-2-dot-auxbrainhome.appspot.com";
 
-exports.EIApiRequest = async (endpoint, encodedPayload) => {
+const EIApiRequest = async (endpoint, encodedPayload) => {
     const url = API_ROOT + endpoint;
     try {
         const resp = await fetch(url, {
@@ -24,6 +28,29 @@ exports.EIApiRequest = async (endpoint, encodedPayload) => {
     }
 }
 
+exports.EIApiRequest = EIApiRequest;
+
+exports.getPlayerByEiId = async (id) => {
+    const root = await protobuf.load("./protobuf/ei.proto");
+    const EggIncFirstContactRequest = root.lookupType("ei.EggIncFirstContactRequest");
+    const EggIncFirstContactResponse = root.lookupType("ei.EggIncFirstContactResponse");
+
+    const requestPayload = {
+        rinfo: basicRequestInfo(id),
+        eiUserId: id,
+        clientVersion: CLIENT_VERSION,
+    };
+    const encodedRequestPayload = encodeService.encodeMessage(EggIncFirstContactRequest, requestPayload);
+    let encodedResponsePayload;
+    try {
+        encodedResponsePayload = await EIApiRequest('/ei/first_contact', encodedRequestPayload);
+    } catch (e) {
+        console.log("Something went wrong\n", e.message);
+    }
+
+    return await decodeService.decodeMessage(EggIncFirstContactResponse, encodedResponsePayload, true);
+}
+
 exports.getAllContractsList = async () => {
     const availableContractsResponse = await fetch("https://raw.githubusercontent.com/fanaticscripter/CoopTracker/master/data/contracts.json")
     const availableContracts = await availableContractsResponse.json();
@@ -32,7 +59,7 @@ exports.getAllContractsList = async () => {
     return availableContracts.slice(-30);
 }
 
-exports.basicRequestInfo = (userId) => {
+const basicRequestInfo = (userId) => {
     return {
         eiUserId: userId,
         clientVersion: userInfo.CLIENT_VERSION,
@@ -41,3 +68,4 @@ exports.basicRequestInfo = (userId) => {
         platform: userInfo.PLATFORM_STRING,
     };
 }
+exports.basicRequestInfo = basicRequestInfo;
