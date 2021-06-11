@@ -17,15 +17,21 @@ exports.addMemberToDatabase = async (message, eiId, inGameName) => {
     }
 }
 
-exports.removeMemberFromTheDatabase = async (message, eiId) => {
-    // check the ei id for a match to the general pattern
-    if (eiId && !/^(EI)([0-9]{16})/.test(eiId)) {
-        message.channel.send(getEiIdMissMatchMessage(eiId));
-        return;
+exports.removeMemberFromTheDatabase = async (message, parameter) => {
+    // try to infer the type of parameter
+    let eiId = "";
+    let inGameName = "";
+    let discordId = "";
+    if (/^(EI)([0-9]{16})/.test(parameter)) {
+        eiId = parameter;
+    } else if (/^([0-9]{18})/.test(parameter)) {
+        discordId = parameter;
+    } else if (parameter) {
+        inGameName = parameter;
     }
 
     try {
-        await removeMember(eiId, message.author.id);
+        await removeMember(eiId, discordId, inGameName);
         message.channel.send("Member removed");
     } catch (e) {
         message.channel.send("Something went wrong\n" + e.message);
