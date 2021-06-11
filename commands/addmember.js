@@ -2,12 +2,13 @@ const {addMemberToDatabase} = require("../controllers/members.js");
 
 module.exports = {
     name: "addmember",
-    usage: "<EI-id> <inGameName>",
-    description: "Adds a member to the database",
+    usage: "<EI-id> <in-game-name> <discord-id>",
+    description: "Adds a member to the database. If discord-id is not sent, the bot assumes the author of the message to be the player to be added",
     async execute(message, args) {
         const eiId = args[0];
         const inGameName = args[1];
+        const discordId = args[2];
 
-        await addMemberToDatabase(message, eiId, inGameName);
+        await addMemberToDatabase(message, eiId, inGameName, discordId);
     },
 };
