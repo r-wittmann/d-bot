@@ -10,10 +10,12 @@
   "author": "Rainer Wittmann <r-wittmann@outlook.de>",
   "license": "MIT",
   "dependencies": {
+    "ascii-table": "0.0.9",
     "atob": "^2.1.2",
     "btoa": "^1.2.1",
     "discord.js": "^12.5.3",
     "dotenv": "^9.0.2",
+    "mongoose": "^5.12.13",
     "node-fetch": "^2.6.1",
     "nodemon": "^2.0.7",
     "protobufjs": "~6.11.2"

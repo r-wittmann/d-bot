@@ -1,9 +1,9 @@
 const protobuf = require("protobufjs");
 
-const api = require("../services/api.js");
-const encodeService = require("../services/encode.js");
-const decodeService = require("../services/decode.js");
-const {CLIENT_VERSION} = require("../services/version.js");
+const api = require("../services/auxbrain/api.js");
+const encodeService = require("../services/auxbrain/encode.js");
+const decodeService = require("../services/auxbrain/decode.js");
+const {CLIENT_VERSION} = require("../services/auxbrain/version.js");
 
 exports.getCoopStatus = async (contractId, coopCode) => {
     const root = await protobuf.load("./protobuf/ei.proto");

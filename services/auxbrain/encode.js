@@ -1,6 +1,6 @@
 const btoa = require("btoa");
 
-const utils = require("./utils.js");
+const utils = require("../utils.js");
 
 const encodeMessage = (message, messageObj, authenticated = false) => {
     if (authenticated) {
