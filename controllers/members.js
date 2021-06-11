@@ -2,7 +2,7 @@ const {addMember, getMembers, removeMember} = require("../services/database.js")
 const {getEiIdMissMatchMessage} = require("../messageGenerators/eiIdMissMatchMessage.js");
 const {getMemberListMessage} = require("../messageGenerators/memberListMessage.js");
 
-exports.addMemberToDatabase = async (message, eiId, inGameName) => {
+exports.addMemberToDatabase = async (message, eiId, inGameName, discordId) => {
     // check the ei id for a match to the general pattern
     if (!/^(EI)([0-9]{16})/.test(eiId)) {
         message.channel.send(getEiIdMissMatchMessage(eiId));
@@ -10,7 +10,7 @@ exports.addMemberToDatabase = async (message, eiId, inGameName) => {
     }
 
     try {
-        await addMember(eiId, message.author.id, inGameName);
+        await addMember(eiId, discordId || message.author.id, inGameName);
         message.channel.send("Member added");
     } catch (e) {
         message.channel.send("Something went wrong\n" + e.message);
