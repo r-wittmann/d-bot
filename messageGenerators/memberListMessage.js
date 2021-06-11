@@ -6,9 +6,9 @@ exports.getMemberListMessage = (members) => {
 
     // create table for member display
     const table = new AsciiTable()
-    table.setHeading("", "Discord Name", "Game Name", "EI id");
+    table.setHeading("", "DISCORD NAME", "EGG INC NAME");
     members.forEach((member, i) => {
-       table.addRow(i+1, member.discordName, member.inGameName, member.eiId);
+       table.addRow(i+1, member.discordName, member.inGameName);
     })
 
     return `\`\`\`\n${table.toString()}\`\`\``;

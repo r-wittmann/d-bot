@@ -58,7 +58,12 @@ const getDiscordDisplayNames = async (message, members) => {
             // if the member is not on the server, get the user
             discordUser = await message.client.users.fetch(member.discordId);
         }
-        const updatedMember = Object.assign({}, member.toObject(), {discordName: discordUser.displayName || discordUser.username});
+
+        // some users have information in brackets in their nickname. We are going to remove that
+        let discordName = discordUser.displayName || discordUser.username;
+        discordName = discordName.split(" (")[0];
+
+        const updatedMember = Object.assign({}, member.toObject(), {discordName});
         updatedMembers.push(updatedMember);
     }
 
