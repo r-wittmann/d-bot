@@ -52,17 +52,9 @@ exports.getPlayerByEiId = async (id) => {
 }
 
 exports.getAllContractsList = async () => {
-    const availableContractsResponse = await fetch("https://raw.githubusercontent.com/fanaticscripter/EggContractor/master/misc/ContractAggregator/data/contracts.csv")
-    const availableContractsCsv = await availableContractsResponse.text();
-    const availableContractsLines = availableContractsCsv.split("\n");
-    const availableContracts = [];
-    for (const line of availableContractsLines) {
-        availableContracts.push({
-            id: line.split(",")[0],
-            proto: line.split(",").pop(),
-        });
+    const availableContractsResponse = await fetch("https://raw.githubusercontent.com/fanaticscripter/Egg/master/contracts/data/contracts.json")
+    const availableContracts = await availableContractsResponse.json();
 
-    }
     // as some of the contract ids don't get updated for the legacy run,
     // only the last 10 weeks (30 contracts) are considered.
     return availableContracts.slice(-30);
