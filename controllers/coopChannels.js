@@ -15,16 +15,16 @@ exports.createActiveCoopChannel = async (message, contractId, coopCode) => {
     message.channel.send("Channel created");
 }
 
-exports.moveActiveCoopChannelToArchive = async (message, contractId, coopCode) => {
+exports.deleteActiveCoopChannel = async (message, contractId, coopCode) => {
     const activeCoops = await getActiveCoops(message.client);
     const contractName = activeCoops.find(coop => coop.contractId === contractId).contractName;
 
     // get all channels in coop category
     const activeChannels = await message.client.channels.cache;
-    const channelToMove = activeChannels.find(channel =>
+    const channelToDelete = activeChannels.find(channel =>
         channel.name === getChannelNameByContractNameAndCoopCode(contractName, coopCode)
         && channel.parent.id === process.env.COOP_CATEGORY_ID
     );
-    await channelToMove.edit({parentID: process.env.ARCHIVE_CATEGORY_ID});
+    await channelToDelete.delete();
 }
 
