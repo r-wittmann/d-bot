@@ -1,4 +1,4 @@
-const {addMember, getMembers, removeMember} = require("../services/database.js");
+const {addMember, getMembers, removeMember} = require("../services/dataAccess/database.js");
 const {getEiIdMissMatchMessage} = require("../messageGenerators/eiIdMissMatchMessage.js");
 const {getMemberListMessage} = require("../messageGenerators/memberListMessage.js");
 

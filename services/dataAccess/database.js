@@ -1,12 +1,5 @@
 const mongoose = require("mongoose");
-
-const memberSchema = mongoose.Schema({
-    eiId: {type: String, unique: true},
-    discordId: {type: String, unique: true},
-    inGameName: String
-})
-
-const Member = mongoose.model("Member", memberSchema);
+const {Member, Coop} = require("./model.js");
 
 const openDatabaseConnection = async () => {
     // set up the connection to the database and return it

@@ -1,10 +1,10 @@
 const protobuf = require("protobufjs");
 
-const api = require("../services/auxbrain/api.js");
+const api = require("../services/dataAccess/auxbrainApi.js");
 const {decodeMessage} = require("../services/auxbrain/decode.js");
 
 exports.getMatchingContract = async (contractId) => {
-    const root = await protobuf.load("./protobuf/ei.proto");
+    const root = await protobuf.load("./services/auxbrain/protobuf/ei.proto");
     const Contract = root.lookupType("ei.Contract");
 
     // get the last 30 contracts

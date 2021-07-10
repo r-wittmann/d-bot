@@ -1,9 +1,9 @@
 const fetch = require("node-fetch");
-const userInfo = require("./version.js");
+const userInfo = require("../auxbrain/version.js");
 const protobuf = require("protobufjs");
-const encodeService = require("./encode.js");
-const decodeService = require("./decode.js");
-const {CLIENT_VERSION} = require("./version.js");
+const encodeService = require("../auxbrain/encode.js");
+const decodeService = require("../auxbrain/decode.js");
+const {CLIENT_VERSION} = require("../auxbrain/version.js");
 
 const API_ROOT = "https://afx-2-dot-auxbrainhome.appspot.com";
 
@@ -31,7 +31,7 @@ const EIApiRequest = async (endpoint, encodedPayload) => {
 exports.EIApiRequest = EIApiRequest;
 
 exports.getPlayerByEiId = async (id) => {
-    const root = await protobuf.load("./protobuf/ei.proto");
+    const root = await protobuf.load("./services/auxbrain/protobuf/ei.proto");
     const EggIncFirstContactRequest = root.lookupType("ei.EggIncFirstContactRequest");
     const EggIncFirstContactResponse = root.lookupType("ei.EggIncFirstContactResponse");
 

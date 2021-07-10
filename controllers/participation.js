@@ -1,5 +1,5 @@
-const database = require("../services/database.js");
-const api = require("../services/auxbrain/api.js");
+const database = require("../services/dataAccess/database.js");
+const api = require("../services/dataAccess/auxbrainApi.js");
 const {getParticipationMessage} = require("../messageGenerators/participationMessage.js");
 
 

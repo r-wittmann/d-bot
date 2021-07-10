@@ -1,4 +1,4 @@
-const {moveActiveCoopChannelToArchive} = require("../controllers/coopChannels.js");
+const {deleteActiveCoopChannel} = require("../controllers/coopChannels.js");
 const {removeActiveCoop} = require("../controllers/activeCoop.js");
 const {getActiveCoops} = require("../controllers/activeCoop.js");
 
@@ -15,7 +15,7 @@ module.exports = {
 
         // try to move the channel to the archive
         try {
-            await moveActiveCoopChannelToArchive(message, contractId, coopCode);
+            await deleteActiveCoopChannel(message, contractId, coopCode);
             message.channel.send("Channel moved To Archive");
         } catch (e) {
             message.channel.send("Something went wrong...");

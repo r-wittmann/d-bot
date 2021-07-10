@@ -1,17 +1,18 @@
-const {getMembersFromDatabase} = require("../controllers/members.js");
+const {assignCoopTeams} = require("../controllers/assignCoopTeams.js");
 
 module.exports = {
-    name: "getmembers",
-    usage: "",
-    description: "Gets all members from the database, adds both discord nickname and in game name",
+    name: "assigncoopteams",
+    usage: "<contract-id>",
+    description: "Divides all members into fair coop teams for a given contract",
     async execute(message, args) {
+        const contractId = args[0];
         let waitingMessage;
 
         try {
             // Send a "in progress" message. Ignore warning below. That's not true
             waitingMessage = await message.channel.send("This may take a few moments\nWorking on it...");
 
-            await getMembersFromDatabase(message);
+            await assignCoopTeams(message, contractId);
         } catch (e) {
             message.channel.send("Something went wrong\n" + e.message);
         }

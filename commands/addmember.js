@@ -9,6 +9,10 @@ module.exports = {
         const inGameName = args[1];
         const discordId = args[2];
 
-        await addMemberToDatabase(message, eiId, inGameName, discordId);
+        try {
+            await addMemberToDatabase(message, eiId, inGameName, discordId);
+        } catch (e) {
+            message.channel.send("Something went wrong\n" + e.message);
+        }
     },
 };

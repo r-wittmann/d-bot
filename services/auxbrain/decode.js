@@ -7,7 +7,7 @@ const decodeMessage = async (message, encoded, authenticated = false) => {
     if (!encoded) return;
 
     if (authenticated) {
-        const root = await protobuf.load("./protobuf/ei.proto");
+        const root = await protobuf.load("./services/auxbrain/protobuf/ei.proto");
         const AuthenticatedMessage = root.lookupType("ei.AuthenticatedMessage");
         const wrapperPayload = await decodeMessage(
             AuthenticatedMessage,

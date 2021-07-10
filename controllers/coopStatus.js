@@ -1,12 +1,12 @@
 const protobuf = require("protobufjs");
 
-const api = require("../services/auxbrain/api.js");
+const api = require("../services/dataAccess/auxbrainApi.js");
 const encodeService = require("../services/auxbrain/encode.js");
 const decodeService = require("../services/auxbrain/decode.js");
 const {CLIENT_VERSION} = require("../services/auxbrain/version.js");
 
 exports.getCoopStatus = async (contractId, coopCode) => {
-    const root = await protobuf.load("./protobuf/ei.proto");
+    const root = await protobuf.load("./services/auxbrain/protobuf/ei.proto");
     const ContractCoopStatusRequest = root.lookupType("ei.ContractCoopStatusRequest");
     const ContractCoopStatusResponse = root.lookupType("ei.ContractCoopStatusResponse");
 
