@@ -28,7 +28,30 @@ exports.assignCoopTeams = async (message, contractId) => {
             return Object.assign({}, member, {earningsBonus});
         });
 
-        // todo filter out members that have already completed the contract
+        // filter out members that have already completed the contract
+        updatedMembers = updatedMembers.filter(member => {
+            const archivedContracts = member.backup.contracts.archive;
+            let notCompleted = true;
+
+            // loop through archived contracts, search for the contract id and check if it was completed
+            for (const archivedContract of archivedContracts) {
+                const archiveContractId = archivedContract.contract.identifier;
+                const numGoals = archivedContract.contract.goals.length;
+                const goalsAchieved = archivedContract.numGoalsAchieved;
+                if (archiveContractId === contractId && numGoals === goalsAchieved) {
+                    notCompleted = false;
+                    break;
+                }
+            }
+
+            return notCompleted;
+        })
+
+        // if there is no one left in the list (everyone has completed the contract), send a message and return
+        if (updatedMembers.length === 0) {
+            await message.channel.send("All members seem to have completed this contract.");
+            return;
+        }
 
         // get contracts
         let contracts = await getAllContractsList();
