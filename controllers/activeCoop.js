@@ -28,6 +28,9 @@ exports.getActiveCoops = async (client) => {
 }
 
 exports.addActiveCoop = async (message, contractId, coopCode, activeCoops) => {
+    // coop codes can not be capitalized. Because autocorrect sometimes capitalizes words, we need to decapitalize it
+    coopCode = coopCode.toLowerCase();
+
     // check, if the sent contract already exists in our list
     const existingContractMessage = activeCoops.find(coop => coop.contractId === contractId);
     if (existingContractMessage) {
@@ -124,7 +127,9 @@ const addCompletedCoopToChannel = async (message, contractName, coopCode) => {
 exports.updateActiveCoops = async (activeCoops) => {
     for (const activeContract of activeCoops) {
         let coopSizes = [];
-        for (const coopCode of activeContract.coopCodes) {
+        for (let coopCode of activeContract.coopCodes) {
+            // decapetalize the coop code
+            coopCode = coopCode.toLowerCase();
             // get coop status
             const coopStatus = await getCoopStatus(activeContract.contractId, coopCode);
             if (!coopStatus){
