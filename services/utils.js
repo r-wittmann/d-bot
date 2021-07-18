@@ -68,5 +68,5 @@ exports.secondsToDateString = (seconds) => {
 
 exports.getChannelNameByContractNameAndCoopCode = (contractName, coopCode) => {
     // remove all special characters and replace spaces with a hyphen (thats what discord does on channel creation
-    return `${contractName.toLowerCase().replace(/[^a-zA-Z0-9 ]/g, "").replace(/\s/g, "-")}-${coopCode}`;
+    return `${coopCode}-${contractName.toLowerCase().replace(/[^a-zA-Z0-9 ]/g, "").replace(/\s/g, "-")}`;
 }
