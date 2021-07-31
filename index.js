@@ -30,17 +30,24 @@ client.on('message', message => {
     const args = message.content.slice(prefix.length).trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
 
+    // check to see if the command exists
     const command = client.commands.get(commandName)
-    if (!command) return;
+    if (!command) {
+        log(client, `A non existing command was called: \`${commandName}\``);
+        if (args) {
+            log(client, `The following parameters were given: \`${args.join(" ")}\``);
+        }
+        return;
+    }
 
-    commandHandler(message, command);
+    commandHandler(message, command, args);
 });
 
-const commandHandler = async (message, command) => {
-    await log(client, `Command \`${command.name}\` is about to be executed`);
+const commandHandler = async (message, command, args) => {
+    await log(client, `Command \`${command.name}\` is about to be executed with parameters \`${args.join(" ")}\``);
 
     if (command.name === "help") {
-        command.execute(message, client.commands);
+        command.execute(message, args, client.commands);
     } else {
         try {
             command.execute(message, args);
