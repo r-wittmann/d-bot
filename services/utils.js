@@ -21,6 +21,7 @@ exports.trimTrailingZeros = (s) => {
     return s;
 }
 
+/*
 const calculateEggsPerHour = (coopStatus) => {
     let eggsPerSecond = 0;
     coopStatus.contributors.forEach(contributor => eggsPerSecond += contributor.contributionRate);
@@ -70,3 +71,4 @@ exports.getChannelNameByContractNameAndCoopCode = (contractName, coopCode) => {
     // remove all special characters and replace spaces with a hyphen (thats what discord does on channel creation
     return `${coopCode}-${contractName.toLowerCase().replace(/[^a-zA-Z0-9 ]/g, "").replace(/\s/g, "-")}`;
 }
+*/
