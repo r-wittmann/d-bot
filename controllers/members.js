@@ -9,8 +9,12 @@ exports.addMemberToDatabase = async (message, eiId, inGameName, discordId) => {
         return;
     }
 
+    discordId = discordId || message.author.id;
+    // to allow mentions as argument for the discord user, some characters have to be removed
+    discordId = discordId.replace(/[\\<>@#&!]/g, "");
+
     try {
-        await addMember(eiId, discordId || message.author.id, inGameName);
+        await addMember(eiId, discordId, inGameName);
         message.channel.send("Member added");
     } catch (e) {
         message.channel.send("Something went wrong\n" + e.message);
