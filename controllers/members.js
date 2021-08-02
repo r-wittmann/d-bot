@@ -49,7 +49,22 @@ exports.getMembersFromDatabase = async (message) => {
         // add discord user name or display name
         const membersWithDiscordNames = await getDiscordDisplayNames(message, members);
 
-        await message.channel.send(getMemberListMessage(membersWithDiscordNames));
+        // sort members alphabetically
+        membersWithDiscordNames.sort((a,b)=>a.discordName.localeCompare(b.discordName));
+
+        // too many members for one message...
+        const chunkedList = [];
+        for (let i = 0; i < membersWithDiscordNames.length; i += 10) {
+            chunkedList.push(membersWithDiscordNames.slice(i, i + 10));
+        }
+
+        await message.channel.send(getMemberListMessage(chunkedList.shift(), 0))
+
+        if (chunkedList.length > 0) {
+            for (let i = 0; i <= chunkedList.length; i++) {
+                await message.channel.send(getMemberListMessage(chunkedList.shift(), i + 1))
+            }
+        }
     } catch (e) {
         message.channel.send("Something went wrong\n" + e.message);
     }
