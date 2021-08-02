@@ -73,7 +73,7 @@ exports.assignCoopTeams = async (message, contractId) => {
                 return contract.coopLastUploadedContribution / contract.lastAmountWhenRewardGiven || 0.1;
             });
 
-            return Object.assign({}, member, {contributionPotential: contributions.reduce((a, b) => a + b) / contributions.length});
+            return Object.assign({}, member, {contributionPotential: contributions.reduce((a, b) => a + b, 0) / contributions.length});
         });
 
         // sort members by EB
