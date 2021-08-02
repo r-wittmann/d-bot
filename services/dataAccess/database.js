@@ -22,8 +22,9 @@ exports.addMember = async (eiId, discordId, inGameName) => {
 
 exports.removeMember = async (eiId, discordId, inGameName) => {
     await openDatabaseConnection();
-    await Member.findOneAndRemove({$or: [{eiId}, {discordId}, {inGameName}]});
+    const member = await Member.findOneAndRemove({$or: [{eiId}, {discordId}, {inGameName}]});
     await mongoose.disconnect();
+    return member;
 }
 
 exports.getMembers = async () => {

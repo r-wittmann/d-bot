@@ -1,7 +1,7 @@
 const {log} = require("../../services/logService.js");
 const {getMemberListMessage} = require("../../messageGenerators/membersListMessage.js");
 const {getDiscordName} = require("../../services/dataAccess/discord.js");
-const {addMember, getMembers} = require("../../services/dataAccess/database.js");
+const {addMember, removeMember, getMembers} = require("../../services/dataAccess/database.js");
 
 exports.addMember = async (message, eiId, inGameName, discordId) => {
     // check the ei id for a match to the general pattern
@@ -23,6 +23,31 @@ exports.addMember = async (message, eiId, inGameName, discordId) => {
         throw e;
     }
 
+}
+
+exports.removeMember = async (message, parameter) => {
+    // try to infer the type of parameter
+    let eiId = "";
+    let inGameName = "";
+    let discordId = "";
+    if (/^(EI)([0-9]{16})/.test(parameter)) {
+        eiId = parameter;
+    } else if (/^<..([0-9]{18})>/.test(parameter)) {
+        // to allow mentions as argument for the discord user, some characters have to be removed
+        discordId = parameter.replace(/[\\<>@#&!]/g, "");
+    } else if (parameter) {
+        inGameName = parameter;
+    }
+
+    try {
+        const member = await removeMember(eiId, discordId, inGameName);
+        if (!member) throw new Error(`User not found. Provided parameter: \`${parameter}\``);
+
+        await log(message.client, "A member was removed from the database", eiId, inGameName, discordId);
+        message.channel.send("Member removed");
+    } catch (e) {
+        throw e;
+    }
 }
 
 exports.getMembers = async (message) => {
