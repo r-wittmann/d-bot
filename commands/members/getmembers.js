@@ -5,7 +5,10 @@ module.exports = {
     name: "getmembers",
     usage: "",
     description: "Returns a formatted list of all members with their discord and in game names. May take a few moments.",
-    help: "Returns a formatted list of all members with their discord and in game names. May take a few moments.",
+    help: "Returns a formatted list of all members with their discord and in game names.\n" +
+        "Discord names are fetched every time the command is called, so they are always up to date. " +
+        "In game names are stored in a database. If you want to update your in game name, please tell Quacking.\n" +
+        "May take a few moments.",
     async execute(message) {
         let waitingMessage;
 
