@@ -1,7 +1,7 @@
-const {log} = require("../../services/logService.js");
-const {getMemberListMessage} = require("../../messageGenerators/membersListMessage.js");
-const {getDiscordName} = require("../../services/dataAccess/discord.js");
-const {addMember, removeMember, getMembers} = require("../../services/dataAccess/database.js");
+const {log} = require("../services/logService.js");
+const {getMemberListMessage} = require("../messageGenerators/membersListMessage.js");
+const {getDiscordName} = require("../services/dataAccess/discord.js");
+const {addMember, removeMember, getMembers} = require("../services/dataAccess/database.js");
 
 exports.addMember = async (message, eiId, inGameName, discordId) => {
     // check the ei id for a match to the general pattern

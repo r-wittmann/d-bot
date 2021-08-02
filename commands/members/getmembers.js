@@ -1,4 +1,4 @@
-const {getMembers} = require("../../controllers/members/members.js");
+const {getMembers} = require("../../controllers/members.js");
 const {log} = require("../../services/logService.js");
 
 module.exports = {

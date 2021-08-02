@@ -1,4 +1,4 @@
-const {log} = require("../../services/logService.js");
+const {log} = require("../services/logService.js");
 
 exports.help = async (message, args, commands) => {
 

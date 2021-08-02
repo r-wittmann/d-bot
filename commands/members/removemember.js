@@ -1,4 +1,4 @@
-const {removeMember} = require("../../controllers/members/members.js");
+const {removeMember} = require("../../controllers/members.js");
 const {log} = require("../../services/logService.js");
 
 module.exports = {

@@ -1,5 +1,5 @@
 const {log} = require("../../services/logService.js");
-const {help} = require("../../controllers/help/help.js");
+const {help} = require("../../controllers/help.js");
 
 module.exports = {
     name: "help",
