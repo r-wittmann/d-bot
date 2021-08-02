@@ -21,6 +21,17 @@ exports.trimTrailingZeros = (s) => {
     return s;
 }
 
+exports.calculateEarningsBonus = (backup) => {
+    // TODO: take ER into account. Currently ER is assumed to be maxed
+    const soulEggs = backup.game.soulEggsD;
+    const prophecyEggs = backup.game.eggsOfProphecy;
+    // not sure if that works like this...
+    // const soulEggER = backup.game.epicResearch.get("soul_eggs");
+    // const prophecyER = backup.game.epicResearch.get("prophecy_bonus");
+
+    return 100 * soulEggs * 1.5 * 1.1 ** prophecyEggs;
+}
+
 /*
 const calculateEggsPerHour = (coopStatus) => {
     let eggsPerSecond = 0;
