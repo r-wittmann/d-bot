@@ -23,10 +23,24 @@ exports.createActiveCoopChannel = async (message, contractId, coopCode) => {
             }
         );
 
-    await createdChannel.send(`$coopstatus ${contractId} ${coopCode}`);
+        await createdChannel.send(`$coopstatus ${contractId} ${coopCode}`);
     } catch
         (e) {
         throw e;
     }
 }
 
+exports.deleteActiveCoopChannel = async (message, contractId, coopCode) => {
+
+    try {
+        // get all channels in coop category
+        const activeChannels = await message.client.channels.cache;
+        const channelToDelete = activeChannels.find(channel =>
+            channel.name === `${coopCode}-${contractId}`
+            && channel.parent.id === process.env.COOP_CATEGORY_ID
+        );
+        await channelToDelete.delete();
+    } catch (e) {
+        throw e;
+    }
+}
