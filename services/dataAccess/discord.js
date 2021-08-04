@@ -12,3 +12,21 @@ exports.getDiscordName = async (message, discordId) => {
     let discordName = discordUser.displayName || discordUser.username;
     return discordName.split(" (")[0];
 }
+
+exports.createActiveCoopChannel = async (message, contractId, coopCode) => {
+    try {
+        const createdChannel = await message.guild.channels.create(
+            `${coopCode}-${contractId}`, {
+                type: "text",
+                parent: process.env.COOP_CATEGORY_ID,
+                position: 100
+            }
+        );
+
+    await createdChannel.send(`$coopstatus ${contractId} ${coopCode}`);
+    } catch
+        (e) {
+        throw e;
+    }
+}
+
