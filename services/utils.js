@@ -25,11 +25,27 @@ exports.calculateEarningsBonus = (backup) => {
     // TODO: take ER into account. Currently ER is assumed to be maxed
     const soulEggs = backup.game.soulEggsD;
     const prophecyEggs = backup.game.eggsOfProphecy;
-    // not sure if that works like this...
-    // const soulEggER = backup.game.epicResearch.get("soul_eggs");
-    // const prophecyER = backup.game.epicResearch.get("prophecy_bonus");
 
-    return 100 * soulEggs * 1.5 * 1.1 ** prophecyEggs;
+    const epicResearches = backup.game?.epicResearch || [];
+
+    let soulFoodLevel = 0;
+    for (const r of epicResearches) {
+        if (r.id === 'soul_eggs') {
+            soulFoodLevel = r.level;
+        }
+    }
+
+    let prophecyBonusLevel = 0;
+    for (const r of epicResearches) {
+        if (r.id === 'prophecy_bonus') {
+            prophecyBonusLevel = r.level;
+        }
+    }
+
+    const soulEggBonus = 0.1 + soulFoodLevel * 0.01;
+    const prophecyEggBonus = 0.05 + prophecyBonusLevel * 0.01;
+
+    return 100 * soulEggs * soulEggBonus * (1 + prophecyEggBonus) ** prophecyEggs;
 }
 
 const calculateEggsPerHour = (coopStatus) => {
