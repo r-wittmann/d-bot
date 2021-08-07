@@ -204,30 +204,34 @@ exports.assignCoopTeams = async (message, contractId) => {
     }
 
     /**
-     * This is an extra step for the Malstormes to be in one coop
+     * This is an extra step for the Malstormes to be in one coop.
+     * To prevent underpowered groups, this rule is only feasible for coops bigger than 3
      */
-    const moEI = "EI5927804014690304";
-    const m0EI = "EI6566080824213504";
-    // find the groups with the respective players
-    let moGroup = groups.find(group => {
-        for (const member of group) {
-            if (member.eiId === moEI) return true;
-        }
-        return false;
-    })
-    let m0Group = groups.find(group => {
-        for (const member of group) {
-            if (member.eiId === m0EI) return true;
-        }
-        return false;
-    })
+    if (assignableContract.maxCoopSize > 3) {
 
-    // if the malstormes are not in the same group, change that
-    if (moGroup && m0Group && moGroup !== m0Group) {
-        const m0 = m0Group.find(member => member.eiId === m0EI);
-        m0Group.splice(m0Group.indexOf(m0), 1);
-        m0Group.push(moGroup.pop());
-        moGroup.push(m0);
+        const moEI = "EI5927804014690304";
+        const m0EI = "EI6566080824213504";
+        // find the groups with the respective players
+        let moGroup = groups.find(group => {
+            for (const member of group) {
+                if (member.eiId === moEI) return true;
+            }
+            return false;
+        })
+        let m0Group = groups.find(group => {
+            for (const member of group) {
+                if (member.eiId === m0EI) return true;
+            }
+            return false;
+        })
+
+        // if the malstormes are not in the same group, change that
+        if (moGroup && m0Group && moGroup !== m0Group) {
+            const m0 = m0Group.find(member => member.eiId === m0EI);
+            m0Group.splice(m0Group.indexOf(m0), 1);
+            m0Group.push(moGroup.pop());
+            moGroup.push(m0);
+        }
     }
 
     // send a message with suggested teams
