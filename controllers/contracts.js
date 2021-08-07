@@ -1,11 +1,13 @@
-const {getPlayerByEiId} = require("../services/dataAccess/auxbrainApi.js");
+const {
+    getActiveMessage,
+    getCompletedMessage,
+    getNeedToJoinMessage
+} = require("../messageGenerators/participationMessage.js");
+const {getAllContractsList, getMatchingContract, getPlayerByEiId} = require("../services/dataAccess/auxbrainApi.js");
 const {getAssignCoopTeamsMessage} = require("../messageGenerators/assignCoopTeamsMessage.js");
 const {calculateEarningsBonus} = require("../services/utils.js");
-const {getMatchingContract} = require("../services/dataAccess/auxbrainApi.js");
-const {getParticipationMessage} = require("../messageGenerators/participationMessage.js");
 const {log} = require("../services/logService.js");
 const {getMembers} = require("../services/dataAccess/database.js");
-const {getAllContractsList} = require("../services/dataAccess/auxbrainApi.js");
 
 exports.checkParticipation = async (message, contractId) => {
 
@@ -56,10 +58,7 @@ exports.checkParticipation = async (message, contractId) => {
             for (const activeContract of member.activeContracts) {
                 if (activeContract.contractId === contractId) {
                     if (activeContract.coopCode) {
-                        activeList.push({
-                            inGameName: member.inGameName,
-                            coopCode: activeContract.coopCode,
-                        });
+                        activeList.push(member.inGameName);
                         continue memberLoop;
                     } else {
                         needToJoinList.push(member.inGameName);
@@ -77,8 +76,13 @@ exports.checkParticipation = async (message, contractId) => {
             needToJoinList.push(member.inGameName);
         }
 
-    // construct message
-    await message.channel.send(getParticipationMessage(contractId, completedList, activeList, needToJoinList));
+    // send messages
+    await message.channel.send({embed: getCompletedMessage(contractId, completedList)})
+
+    await message.channel.send({embed: getActiveMessage(contractId, activeList)})
+
+    await message.channel.send({embed: getNeedToJoinMessage(contractId, needToJoinList)})
+
     await log(message.client, `Participation was checked for contract \`${contractId}\``);
 }
 
