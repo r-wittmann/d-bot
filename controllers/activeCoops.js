@@ -1,3 +1,4 @@
+const {getCoopStatusMessage} = require("../messageGenerators/coopStatusMessage.js");
 const {getActiveCoopsMessage} = require("../messageGenerators/activeCoopsMessage.js");
 const {getCoopStatus, getMatchingContract} = require("../services/dataAccess/auxbrainApi.js");
 const {log} = require("../services/logService.js");
@@ -146,4 +147,20 @@ exports.removeActiveCoop = async (message, contractId, coopCode) => {
 
     // call $updateactivecoops to fill active coop message with information
     await message.channel.send("$updateactivecoops");
+}
+
+exports.getCoopStatus = async (message, contractId, coopCode) => {
+    // get contract details
+    const contractDetails = await getMatchingContract(contractId);
+    if (!contractDetails) {
+        throw new Error(`No contract found with id: \`${contractId}\``);
+    }
+
+    // get coop status
+    let coopStatus = await getCoopStatus(contractId, coopCode);
+    if (!coopStatus.contributors) {
+        throw new Error(`No coop found with code: \`${coopCode}\``)
+    }
+
+    await message.channel.send({embed: getCoopStatusMessage(contractDetails, coopStatus)})
 }
