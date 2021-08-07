@@ -24,6 +24,8 @@ client.once('ready', () => {
     console.log('Ready!');
 });
 
+setInterval(() => log(client, "$updateactivecoops"), 60000);
+
 client.on('message', message => {
     if (!message.content.startsWith(prefix)) return;
 

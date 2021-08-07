@@ -1,8 +1,11 @@
+const {getActiveCoopsMessage} = require("../messageGenerators/activeCoopsMessage.js");
+const {getCoopStatus, getMatchingContract} = require("../services/dataAccess/auxbrainApi.js");
 const {log} = require("../services/logService.js");
 const {createActiveCoopChannel, deleteActiveCoopChannel} = require("../services/dataAccess/discord.js");
 const {
     addActiveContract,
     getActiveContractById,
+    getActiveContracts,
     updateActiveContract,
     removeActiveContract
 } = require("../services/dataAccess/database.js");
@@ -35,6 +38,74 @@ exports.addActiveCoop = async (message, contractId, coopCode) => {
 
     // call $updateactivecoops to fill active coop message with information
     await message.channel.send("$updateactivecoops");
+}
+
+exports.updateActiveCoops = async (message) => {
+    // delete calling message
+    message.delete();
+
+    // get all active contracts from the database
+    const activeContracts = await getActiveContracts();
+
+    // for each contract, get the contract information from github
+    const updatedActiveContracts = [];
+    for (let activeContract of activeContracts) {
+        const contractDetails = await getMatchingContract(activeContract.contractId);
+        if (!contractDetails) {
+            throw new Error(`A contract with the id \`${activeContract.contractId}\` could not be found`);
+        }
+
+        const coopStatusList = [];
+        // for each coop, get the coop status from auxbrain
+        for (let i = 0; i < activeContract.activeCoops.length; i++) {
+            const coopCode = activeContract.activeCoops[i];
+            const coopStatus = await getCoopStatus(activeContract.contractId, coopCode);
+            coopStatusList.push(coopStatus);
+        }
+        updatedActiveContracts.push(Object.assign(
+            {},
+            activeContract.toObject(),
+            contractDetails,
+            {activeCoops: coopStatusList}
+        ));
+    }
+
+    // get old messages
+    const activeCoopChannel = await message.client.channels.cache.get(process.env.ACTIVE_COOP_CHANNEL_ID);
+    const channelMessagesMap = await activeCoopChannel.messages.fetch();
+    const channelMessages = Array.from(channelMessagesMap.values());
+    const oldActiveContractMessages = channelMessages.filter(m => m.embeds && m.embeds.length !== 0);
+
+    // generate new messages
+    const activeContractMessages = [];
+    for (let activeContract of updatedActiveContracts) {
+        activeContractMessages.push(getActiveCoopsMessage(activeContract));
+    }
+
+    // edit old messages, as long as they exist
+    const numberOfOldMessages = oldActiveContractMessages.length;
+    for (let i = 0; i < numberOfOldMessages; i++) {
+        if (activeContractMessages.length < i) break;
+        const oldMessage = oldActiveContractMessages.pop();
+        const newMessage = activeContractMessages.pop();
+        await oldMessage.edit({embed: newMessage});
+    }
+
+    // are any new messages left? send them
+    if (activeContractMessages.length > 0) {
+        for (let m of activeContractMessages) {
+            await activeCoopChannel.send({embed: m});
+        }
+    }
+
+    // are any old messages left? delete them
+    if (oldActiveContractMessages.length > 0) {
+        for (let m of oldActiveContractMessages) {
+            await m.delete();
+        }
+    }
+
+    await log(message.client, "Active coops updated.");
 }
 
 exports.removeActiveCoop = async (message, contractId, coopCode) => {
