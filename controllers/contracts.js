@@ -90,11 +90,9 @@ exports.assignCoopTeams = async (message, contractId) => {
 
     // get matching contract
     let assignableContract;
-    try {
-        assignableContract = await getMatchingContract(contractId);
-        if (!assignableContract) throw new Error(`No contract found for contract id \`${contractId}\``);
-    } catch (e) {
-        throw e;
+    assignableContract = await getMatchingContract(contractId);
+    if (!assignableContract) {
+        throw new Error(`No contract found for contract id \`${contractId}\``);
     }
 
     // get previous contracts
@@ -177,7 +175,6 @@ exports.assignCoopTeams = async (message, contractId) => {
      * Each of the groups gets one player assigned, starting with the highest EB
      * After that, we loop through all players and assign them based on contribution potential
      * by assigning the player with the highest cp to the group with the lowest cp, a more or less fair split is performed
-     * May brake for coop sizes of 2...
      **/
 
         // calculate the number of coops we need
@@ -237,6 +234,25 @@ exports.assignCoopTeams = async (message, contractId) => {
     // send a message with suggested teams
     await message.channel.send({embed: getAssignCoopTeamsMessage(assignableContract.name, contractId, groups)});
     await log(message.client, `Coop assignment performed for contract \`${contractId}\``);
+
+    // create channels
+    for (let i = 0; i < groups.length; i++) {
+        const createdChannel = await message.guild.channels.create(
+            `group-${i+1}-${contractId}`, {
+                type: "text",
+                parent: process.env.COOP_CATEGORY_ID,
+                position: 100+1
+            }
+        );
+
+        // Send instructions and mention the members
+        await createdChannel.send(`This is the coop channel for group ${i+1}. Members are:`);
+        for (let member of groups[i]) {
+            await createdChannel.send(`<@!${member.discordId}>`);
+        }
+        await createdChannel.send(`Use command \`$activatecoop <contract-id> <coop-code> <group-number>\` to add your coop to the list of active coops in <#${process.env.ACTIVE_COOP_CHANNEL_ID}>.`);
+    }
+    await log(message.client, `Channels created for contract \`${contractId}\``);
 }
 
 

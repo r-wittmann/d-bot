@@ -10,7 +10,10 @@ exports.Member = Member;
 
 const activeContractSchema = mongoose.Schema({
     contractId: {type: String, unique: true},
-    activeCoops: [String]
+    activeCoops: [{
+        coopCode: String,
+        groupNumber: Number
+    }]
 })
 const ActiveContract = mongoose.model("ActiveContract", activeContractSchema);
 exports.ActiveContract = ActiveContract;

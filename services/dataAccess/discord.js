@@ -30,13 +30,13 @@ exports.createActiveCoopChannel = async (message, contractId, coopCode) => {
     }
 }
 
-exports.deleteActiveCoopChannel = async (message, contractId, coopCode) => {
+exports.deleteActiveCoopChannel = async (message, contractId, groupNumber) => {
 
     try {
         // get all channels in coop category
         const activeChannels = await message.client.channels.cache;
         const channelToDelete = activeChannels.find(channel =>
-            channel.name === `${coopCode}-${contractId}`
+            channel.name === `group-${groupNumber}-${contractId}`
             && channel.parent.id === process.env.COOP_CATEGORY_ID
         );
         await channelToDelete.delete();
