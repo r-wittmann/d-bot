@@ -60,7 +60,6 @@ exports.getMembers = async (message) => {
             const updatedMember = Object.assign({}, member.toObject(), {discordName});
             membersWithDiscordNames.push(updatedMember);
         }
-
         // sort members alphabetically
         membersWithDiscordNames.sort((a,b)=>a.discordName.localeCompare(b.discordName));
 
@@ -69,13 +68,11 @@ exports.getMembers = async (message) => {
         for (let i = 0; i < membersWithDiscordNames.length; i += 10) {
             chunkedList.push(membersWithDiscordNames.slice(i, i + 10));
         }
-
         await message.channel.send(getMemberListMessage(chunkedList.shift(), 0))
 
-        if (chunkedList.length > 0) {
-            for (let i = 0; i <= chunkedList.length; i++) {
-                await message.channel.send(getMemberListMessage(chunkedList.shift(), i + 1))
-            }
+        for (let i = 0; i < chunkedList.length; i++) {
+            console.log("send message", i);
+            await message.channel.send(getMemberListMessage(chunkedList[i], i + 1))
         }
     } catch (e) {
         throw e;
