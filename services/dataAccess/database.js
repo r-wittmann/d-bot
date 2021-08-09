@@ -4,7 +4,7 @@ const {Member} = require("./models.js");
 
 const openDatabaseConnection = async () => {
     // set up the connection to the database and return it
-    const CONNECTION_URL = "mongodb+srv://ray:ray1234@cluster0.yzthh.mongodb.net/d-bot?retryWrites=true&w=majority";
+    const CONNECTION_URL = "mongodb+srv://ray:ray1234@cluster0.onhgt.mongodb.net/discord_bot?retryWrites=true&w=majority";
     return await mongoose.connect(CONNECTION_URL, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
