@@ -1,11 +1,13 @@
-const {addMember, getMembers, removeMember} = require("../services/dataAccess/database.js");
-const {getEiIdMissMatchMessage} = require("../messageGenerators/eiIdMissMatchMessage.js");
-const {getMemberListMessage} = require("../messageGenerators/memberListMessage.js");
+const {log} = require("../services/logService.js");
+const {getMemberListMessage} = require("../messageGenerators/membersListMessage.js");
+const {getDiscordName} = require("../services/dataAccess/discord.js");
+const {addMember, removeMember, getMembers} = require("../services/dataAccess/database.js");
 
-exports.addMemberToDatabase = async (message, eiId, inGameName, discordId) => {
+exports.addMember = async (message, eiId, inGameName, discordId) => {
     // check the ei id for a match to the general pattern
     if (!/^(EI)([0-9]{16})/.test(eiId)) {
-        message.channel.send(getEiIdMissMatchMessage(eiId));
+        await message.channel.send(`The provided EI-id seems to be wrong. It is generally formatted as EI + 16 numbers. You provided \`${eiId}\``);
+        await log(message.client, `Add member failed because of a faulty EI-id: \`${eiId}\``);
         return;
     }
 
@@ -15,39 +17,49 @@ exports.addMemberToDatabase = async (message, eiId, inGameName, discordId) => {
 
     try {
         await addMember(eiId, discordId, inGameName);
-        message.channel.send("Member added");
+        await log(message.client, "A member was added to the database", eiId, inGameName, discordId);
+        await message.channel.send("Member added");
     } catch (e) {
-        message.channel.send("Something went wrong\n" + e.message);
+        throw e;
     }
 }
 
-exports.removeMemberFromTheDatabase = async (message, parameter) => {
+exports.removeMember = async (message, parameter) => {
     // try to infer the type of parameter
     let eiId = "";
     let inGameName = "";
     let discordId = "";
     if (/^(EI)([0-9]{16})/.test(parameter)) {
         eiId = parameter;
-    } else if (/^([0-9]{18})/.test(parameter)) {
-        discordId = parameter;
+    } else if (/^<..([0-9]{18})>/.test(parameter)) {
+        // to allow mentions as argument for the discord user, some characters have to be removed
+        discordId = parameter.replace(/[\\<>@#&!]/g, "");
     } else if (parameter) {
         inGameName = parameter;
     }
 
     try {
-        await removeMember(eiId, discordId, inGameName);
+        const member = await removeMember(eiId, discordId, inGameName);
+        if (!member) throw new Error(`User not found. Provided parameter: \`${parameter}\``);
+
+        await log(message.client, "A member was removed from the database", eiId, inGameName, discordId);
         message.channel.send("Member removed");
     } catch (e) {
-        message.channel.send("Something went wrong\n" + e.message);
+        throw e;
     }
 }
 
-exports.getMembersFromDatabase = async (message) => {
+exports.getMembers = async (message) => {
     try {
         const members = await getMembers();
 
         // add discord user name or display name
-        const membersWithDiscordNames = await getDiscordDisplayNames(message, members);
+        const membersWithDiscordNames = [];
+        for (let member of members) {
+            const discordName = await getDiscordName(message, member.discordId);
+            const updatedMember = Object.assign({}, member.toObject(), {discordName});
+            membersWithDiscordNames.push(updatedMember);
+        }
 
         // sort members alphabetically
         membersWithDiscordNames.sort((a,b)=>a.discordName.localeCompare(b.discordName));
@@ -66,31 +78,6 @@ exports.getMembersFromDatabase = async (message) => {
             }
         }
     } catch (e) {
-        message.channel.send("Something went wrong\n" + e.message);
+        throw e;
     }
-}
-
-const getDiscordDisplayNames = async (message, members) => {
-    let updatedMembers = [];
-
-    // fetch and add the discord user name
-    for (const member of members) {
-        let discordUser;
-        try {
-            // try to get the member of the server
-            discordUser = await message.guild.members.fetch(member.discordId);
-        } catch (e) {
-            // if the member is not on the server, get the user
-            discordUser = await message.client.users.fetch(member.discordId);
-        }
-
-        // some users have information in brackets in their nickname. We are going to remove that
-        let discordName = discordUser.displayName || discordUser.username;
-        discordName = discordName.split(" (")[0];
-
-        const updatedMember = Object.assign({}, member.toObject(), {discordName});
-        updatedMembers.push(updatedMember);
-    }
-
-    return updatedMembers;
 }

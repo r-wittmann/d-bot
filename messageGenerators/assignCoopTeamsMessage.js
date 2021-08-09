@@ -1,5 +1,4 @@
 const generateGroupFields = (groups) => {
-    const groupObject = [];
     for (let group of groups) {
         group = group.map(m => m.inGameName);
     }
@@ -10,7 +9,7 @@ const generateGroupFields = (groups) => {
     }))
 }
 
-exports.getCoopAssignmentSuggestionMessage = (contractName, contractId, groups) => {
+exports.getAssignCoopTeamsMessage = (contractName, contractId, groups) => {
     return {
         color: 0x0099ff,
         title: contractName,

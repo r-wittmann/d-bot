@@ -1,3 +1,4 @@
+const {getProgressBar} = require("../services/utils.js");
 const {
     calculateEggsPerHour,
     calculateNeededProduction,
@@ -20,18 +21,9 @@ const generateGoalsObject = (goals, eggsShipped) => {
     return goalsObject;
 }
 
-const generateParticipantsObject = (participants) => {
-    return {
-        name: "Participants",
-        value: participants.map(participants => participants.userName).join(", "),
-        inline: false,
-    }
-}
-
-exports.getCoopStatusMessage = (coopStatus, contract) => {
+exports.getCoopStatusMessage = (contract, coopStatus) => {
     const contractName = contract.name;
     const contractId = contract.identifier;
-    const description = contract.description;
 
     const coopId = coopStatus.coopIdentifier
     const maxCoopSize = contract.maxCoopSize;
@@ -49,43 +41,48 @@ exports.getCoopStatusMessage = (coopStatus, contract) => {
     return {
         color: 0x0099ff,
         title: `${contractName} (${contractId})`,
-        description: `${description}\n[Coop Tracker](https://eicoop.netlify.app/${contractId}/${coopId})`,
+        description: `[Coop Tracker](https://eicoop.netlify.app/${contractId}/${coopId})`,
         fields: [
             {
-                name: 'Coop Code',
+                name: "Coop Code",
                 value: coopId,
                 inline: true,
             },
             {
-                name: 'Players',
+                name: "Players",
                 value: `${curCoopSize}/${maxCoopSize}`,
                 inline: true,
             },
             {
-                name: 'Eggs Shipped',
+                name: "Eggs Shipped",
                 value: `${formatEIValue(eggsShipped)} of ${formatEIValue(finalGoalAmount, true)}`,
                 inline: true,
             },
             {
-                name: 'Hourly Production',
+                name: "Hourly Production",
                 value: `Current: ${formatEIValue(currentProd)}/h, required: ${formatEIValue(neededProd)}/h`,
                 inline: true,
             },
             {
-                name: 'Time to Completion',
+                name: "Time to Completion",
                 value: `Expected: ${secondsToDateString(secondsExpected)}, remaining: ${secondsToDateString(secondsRemaining)}`,
                 inline: true,
             },
             {
-                name: '\u200B',
-                value: '\u200B'
+                name: "Progress",
+                value: `\`\`\`${getProgressBar(eggsShipped, finalGoalAmount)}\`\`\``,
+                inline: false,
             },
             generateGoalsObject(contract.goals, eggsShipped),
             {
-                name: '\u200B',
-                value: '\u200B'
+                name: "\u200B",
+                value: "\u200B"
             },
-            generateParticipantsObject(participants)
+            {
+                name: "Participants",
+                value: participants.map(participants => participants.userName).join(", "),
+                inline: false,
+            }
         ],
     };
 }

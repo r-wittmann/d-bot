@@ -1,14 +1,15 @@
+const {log} = require("../services/logService.js");
+const {calculateEarningsBonus} = require("../services/utils.js");
+const {getPlayerByEiId} = require("../services/dataAccess/auxbrainApi.js");
 const {formatEIValue} = require("../services/auxbrain/units.js");
-const {getRankingByTypeMessage} = require("../messageGenerators/rankingMessage.js");
-const {getPlayerByEiId} = require("../services/auxbrain/player.js");
+const {getRankingByTypeMessage} = require("../messageGenerators/rankMessage.js");
 const {getMembers} = require("../services/dataAccess/database.js");
 
 exports.generateRanking = async (message, type) => {
     if (type) type = type.toUpperCase();
     // if type doesn't match, return
-    if (!["EB", "SE", "PE", "GE", "GET", "D", "TC"].includes(type)) {
-        await message.channel.send("Type needs to be one of 'EB' (earnings bonus), 'SE' (soul eggs), 'PE' (eggs of prophecy), 'GE' (golden eggs current), 'GET' (golden eggs total) or 'D' (drones).\nType needs to be included in the command.");
-        return;
+    if (!["EB", "SE", "PE", "GE", "GET", "D"].includes(type)) {
+        throw new Error("Type needs to be one of 'EB' (earnings bonus), 'SE' (soul eggs), 'PE' (eggs of prophecy), 'GE' (golden eggs current), 'GET' (golden eggs total) or 'D' (drones).\nType needs to be included in the command.")
     }
 
     // get all members from the database
@@ -25,11 +26,10 @@ exports.generateRanking = async (message, type) => {
                 inGameName: player.backup.userName,
                 SE: parseInt(player.backup.game.soulEggsD),
                 PE: parseInt(player.backup.game.eggsOfProphecy),
-                EB: 100 * parseInt(player.backup.game.soulEggsD) * 1.5 * 1.1 ** parseInt(player.backup.game.eggsOfProphecy),
+                EB: calculateEarningsBonus(player.backup),
                 GE: parseInt(player.backup.game.goldenEggsEarned) - parseInt(player.backup.game.goldenEggsSpent),
                 GET: parseInt(player.backup.game.goldenEggsEarned),
                 D: parseInt(player.backup.stats.droneTakedowns) + parseInt(player.backup.stats.droneTakedownsElite),
-                TC: parseInt(player.backup.game.totalTimeCheatsDetected)
             });
         updatedMembers.push(member);
     }
@@ -47,4 +47,5 @@ exports.generateRanking = async (message, type) => {
 
     // send message
     await message.channel.send({embed: getRankingByTypeMessage(updatedMembers, type)});
+    await log(message.client, "Command `rank` completed.");
 }

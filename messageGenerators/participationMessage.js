@@ -1,6 +1,6 @@
 const AsciiTable = require("ascii-table");
 
-const getCompletedTable = (names) => {
+const getNameTable = (names) => {
     const table = new AsciiTable()
     table.setHeading("EGG INC NAME");
     names.forEach(name => {
@@ -8,37 +8,8 @@ const getCompletedTable = (names) => {
     })
     return `\`\`\`\n${table.toString()}\`\`\``;
 }
-const getActiveFields = (list) => {
-    if (list.length === 0) {
-        return {
-            name: "Here is a list of active contractors:",
-            value: "No one has started this contract yet.",
-            inline: false,
-        };
-    }
-    // if the list is to long, split it in two
-    if (list.length > 12) {
-        return [
-            {
-                name: "Here is a list of active contractors:",
-                value: getActiveTable(list.slice(0, Math.ceil(list.length / 2))),
-                inline: false,
-            },
-            {
-                name: "Active contractors continued:",
-                value: getActiveTable(list.slice(Math.ceil(list.length / 2), list.length)),
-                inline: false,
-            },
-        ]
-    }
-    return {
-        name: "Here is a list of active contractors:",
-        value: getActiveTable(list),
-        inline: false,
-    }
-}
 
-const getActiveTable = (list) => {
+const getNameAndCoopCodeTable = (list) => {
     const table = new AsciiTable()
     table.setHeading("EGG INC NAME", "COOP CODE");
     list.forEach(element => {
@@ -47,42 +18,59 @@ const getActiveTable = (list) => {
     return `\`\`\`\n${table.toString()}\`\`\``;
 }
 
-const getNeedToJoinTable = (names) => {
-    const table = new AsciiTable()
-    table.setHeading("EGG INC NAME");
-    names.forEach(name => {
-        table.addRow(name);
-    })
-    return `\`\`\`\n${table.toString()}\`\`\``;
+exports.getCompletedMessage = (contractId, completed) => {
+    const messageContent = completed.length === 0
+        ? "No one yet."
+        : getNameTable(completed)
+    return {
+        color: 0x0099ff,
+        title: `Participation in  ${contractId}`,
+        description: `The contract was already completed by:\n` + messageContent
+    }
 }
 
-exports.getParticipationMessage = (contractId, completed, active, needToJoin) => {
-    return {
-        embed: {
-            color: 0x0099ff,
-            title: "Participation",
-            description: `Here is a participation overview for ${contractId}`,
-            fields: [
-                {
-                    name: "The contract was already completed by:",
-                    value: completed.length > 0
-                        ? getCompletedTable(completed)
-                        : "No one yet.",
-                    inline: false,
-                },
-                getActiveFields(active),
-                {
-                    name: "These players have not yet joined a coop:",
-                    value: needToJoin.length > 0
-                        ? getNeedToJoinTable(needToJoin)
-                        : "All members are provided for :)",
-                    inline: false,
-                },
+exports.getActiveMessage = (contractId, active) => {
+    if (active.length === 0) {
+        return {
+            name: "Here is a list of active players:",
+            value: "No one has started a coop yet.",
+            inline: false,
+        };
+    }
 
-            ],
-            footer: {
-                text: "Please note that coop codes are truncated at 24 characters",
-            },
-        }
+    // split the list in chunks of 15 to avoid the message being to long
+    const chunkedList = [];
+    for (let i = 0; i < active.length; i += 15) {
+        chunkedList.push(active.slice(i, i + 15));
+    }
+
+    const activeEmbeds = [];
+    // create first element
+    activeEmbeds.push({
+        color: 0x0099ff,
+        description: "Here is a list of active players:\n" + getNameAndCoopCodeTable(chunkedList.shift()),
+        footer: {text: "Coop codes are truncated after 24 characters for display purposes."}
+    });
+
+    // create rest of fields
+    for (let sublist of chunkedList) {
+        activeEmbeds.push({
+            color: 0x0099ff,
+            description: "Active players continued:\n" + getNameAndCoopCodeTable(sublist),
+            footer: {text: "Coop codes are truncated after 24 characters for display purposes."}
+        });
+    }
+
+    return activeEmbeds;
+}
+
+exports.getNeedToJoinMessage = (contractId, needToJoin) => {
+    const messageContent = needToJoin.length === 0
+        ? "All members are provided for :)"
+        : getNameTable(needToJoin)
+    return {
+        color: 0x0099ff,
+        description: `These players have not yet joined a coop:\n` + messageContent,
+        timestamp: new Date()
     }
 }

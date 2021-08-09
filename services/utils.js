@@ -21,6 +21,33 @@ exports.trimTrailingZeros = (s) => {
     return s;
 }
 
+exports.calculateEarningsBonus = (backup) => {
+    // TODO: take ER into account. Currently ER is assumed to be maxed
+    const soulEggs = backup.game.soulEggsD;
+    const prophecyEggs = backup.game.eggsOfProphecy;
+
+    const epicResearches = backup.game?.epicResearch || [];
+
+    let soulFoodLevel = 0;
+    for (const r of epicResearches) {
+        if (r.id === 'soul_eggs') {
+            soulFoodLevel = r.level;
+        }
+    }
+
+    let prophecyBonusLevel = 0;
+    for (const r of epicResearches) {
+        if (r.id === 'prophecy_bonus') {
+            prophecyBonusLevel = r.level;
+        }
+    }
+
+    const soulEggBonus = 0.1 + soulFoodLevel * 0.01;
+    const prophecyEggBonus = 0.05 + prophecyBonusLevel * 0.01;
+
+    return 100 * soulEggs * soulEggBonus * (1 + prophecyEggBonus) ** prophecyEggs;
+}
+
 const calculateEggsPerHour = (coopStatus) => {
     let eggsPerSecond = 0;
     coopStatus.contributors.forEach(contributor => eggsPerSecond += contributor.contributionRate);
@@ -66,7 +93,11 @@ exports.secondsToDateString = (seconds) => {
     return `${days}d${hours}h${minutes}m`;
 }
 
-exports.getChannelNameByContractNameAndCoopCode = (contractName, coopCode) => {
-    // remove all special characters and replace spaces with a hyphen (thats what discord does on channel creation
-    return `${coopCode}-${contractName.toLowerCase().replace(/[^a-zA-Z0-9 ]/g, "").replace(/\s/g, "-")}`;
+exports.getProgressBar = (eggsShipped, finalGoal) => {
+    const progressBarLength = 40;
+    const progress = Math.min(eggsShipped / finalGoal, 1);
+
+    const hash = Math.round(progress * progressBarLength);
+    const dash = progressBarLength - hash;
+    return `[${"#".repeat(hash)}${"-".repeat(dash)}] ${Math.round(progress * 100)}%`;
 }
