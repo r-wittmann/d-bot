@@ -86,9 +86,7 @@ exports.updateActiveCoops = async (message) => {
     }
 
     // edit old messages, as long as they exist
-    const numberOfOldMessages = oldActiveContractMessages.length;
-    for (let i = 0; i < numberOfOldMessages; i++) {
-        if (activeContractMessages.length <= i) break;
+    while (oldActiveContractMessages.length > 0 && activeContractMessages.length > 0) {
         const oldMessage = oldActiveContractMessages.pop();
         const newMessage = activeContractMessages.pop();
         await oldMessage.edit({embed: newMessage});
