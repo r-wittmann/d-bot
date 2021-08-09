@@ -25,11 +25,9 @@ exports.getRankingByTypeMessage = (members, type) => {
         title: `Ranking by ${typeMatching[type]}`,
         description: getRankingTable(members, type),
         footer: {
-            text: type === "EB"
-                ? "This calculation assumes maxed epic research"
-                : type === "D"
-                    ? "Drones and elite drones are added"
-                    : ""
+            text: type === "D"
+                ? "Drones and elite drones are added"
+                : ""
         }
     };
 }

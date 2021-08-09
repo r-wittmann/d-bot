@@ -23,7 +23,6 @@ exports.generateRanking = async (message, type) => {
             {},
             member.toObject(),
             {
-                inGameName: player.backup.userName,
                 SE: parseInt(player.backup.game.soulEggsD),
                 PE: parseInt(player.backup.game.eggsOfProphecy),
                 EB: calculateEarningsBonus(player.backup),
