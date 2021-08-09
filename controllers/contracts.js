@@ -247,7 +247,7 @@ exports.assignCoopTeams = async (message, contractId) => {
             `group-${i + 1}-${contractId}`, {
                 type: "text",
                 parent: process.env.COOP_CATEGORY_ID,
-                position: 100 + 1
+                position: 100 + i
             }
         );
 
