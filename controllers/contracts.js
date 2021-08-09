@@ -58,7 +58,10 @@ exports.checkParticipation = async (message, contractId) => {
             for (const activeContract of member.activeContracts) {
                 if (activeContract.contractId === contractId) {
                     if (activeContract.coopCode) {
-                        activeList.push(member.inGameName);
+                        activeList.push({
+                            inGameName: member.inGameName,
+                            coopCode: activeContract.coopCode,
+                        });
                         continue memberLoop;
                     } else {
                         needToJoinList.push(member.inGameName);
@@ -79,7 +82,10 @@ exports.checkParticipation = async (message, contractId) => {
     // send messages
     await message.channel.send({embed: getCompletedMessage(contractId, completedList)})
 
-    await message.channel.send({embed: getActiveMessage(contractId, activeList)})
+    const activeMessageEmbeds = getActiveMessage(contractId, activeList);
+    for (let embed of activeMessageEmbeds) {
+        await message.channel.send({embed})
+    }
 
     await message.channel.send({embed: getNeedToJoinMessage(contractId, needToJoinList)})
 
@@ -238,15 +244,15 @@ exports.assignCoopTeams = async (message, contractId) => {
     // create channels
     for (let i = 0; i < groups.length; i++) {
         const createdChannel = await message.guild.channels.create(
-            `group-${i+1}-${contractId}`, {
+            `group-${i + 1}-${contractId}`, {
                 type: "text",
                 parent: process.env.COOP_CATEGORY_ID,
-                position: 100+1
+                position: 100 + 1
             }
         );
 
         // Send instructions and mention the members
-        await createdChannel.send(`This is the coop channel for group ${i+1}. Members are:`);
+        await createdChannel.send(`This is the coop channel for group ${i + 1}. Members are:`);
         for (let member of groups[i]) {
             await createdChannel.send(`<@!${member.discordId}>`);
         }
