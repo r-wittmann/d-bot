@@ -22,7 +22,12 @@ exports.activateCoop = async (message, contractId, coopCode, groupNumber) => {
     // check if contract exists in active contracts
     let activeContract = await getActiveContractById(contractId);
     if (!activeContract) {
-        // todo: check if the contract id actually exists
+        // check if the contract id actually exists
+        const matchingContract = await getMatchingContract(contractId);
+        if (!matchingContract) {
+            throw new Error(`The provided contract id \`${contractId}\` seems to be wrong.`);
+        }
+
         activeContract = await addActiveContract(contractId);
         await log(message.client, `Contract \`${contractId}\` added to active contracts.`);
     }
