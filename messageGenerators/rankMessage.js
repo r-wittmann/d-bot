@@ -23,11 +23,6 @@ exports.getRankingByTypeMessage = (members, type) => {
     return {
         color: 0x0099ff,
         title: `Ranking by ${typeMatching[type]}`,
-        description: getRankingTable(members, type),
-        footer: {
-            text: type === "D"
-                ? "Drones and elite drones are added"
-                : ""
-        }
+        description: getRankingTable(members, type)
     };
 }

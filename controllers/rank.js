@@ -28,7 +28,7 @@ exports.generateRanking = async (message, type) => {
                 EB: calculateEarningsBonus(player.backup),
                 GE: parseInt(player.backup.game.goldenEggsEarned) - parseInt(player.backup.game.goldenEggsSpent),
                 GET: parseInt(player.backup.game.goldenEggsEarned),
-                D: parseInt(player.backup.stats.droneTakedowns) + parseInt(player.backup.stats.droneTakedownsElite),
+                D: parseInt(player.backup.stats.droneTakedowns),
             });
         updatedMembers.push(member);
     }
