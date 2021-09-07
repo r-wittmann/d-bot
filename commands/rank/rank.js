@@ -4,8 +4,8 @@ const {generateRanking} = require("../../controllers/rank.js");
 module.exports = {
     name: "rank",
     usage: "<type>",
-    description: "Returns the current ranking of members on various options. <type> can be one of 'EB' (earnings bonus), 'SE' (soul eggs), 'PE' (eggs of prophecy), 'GE' (golden eggs current), 'GET' (golden eggs total) or 'D' (drones).",
-    help: "Returns the current ranking of members on various options. <type> can be one of 'EB' (earnings bonus), 'SE' (soul eggs), 'PE' (eggs of prophecy), 'GE' (golden eggs current), 'GET' (golden eggs total) or 'D' (drones).",
+    description: "Returns the current ranking of members on various options. <type> can be one of 'EB' (earnings bonus), 'SE' (soul eggs), 'PE' (eggs of prophecy), 'GE' (golden eggs current), 'GET' (golden eggs total), 'D' (drones) or 'LEG' (Legendaries).",
+    help: "Returns the current ranking of members on various options. <type> can be one of 'EB' (earnings bonus), 'SE' (soul eggs), 'PE' (eggs of prophecy), 'GE' (golden eggs current), 'GET' (golden eggs total), 'D' (drones) or 'LEG' (Legendaries).",
     async execute(message, args) {
         const type = args[0];
         let waitingMessage;

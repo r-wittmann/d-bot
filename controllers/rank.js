@@ -8,8 +8,8 @@ const {getMembers} = require("../services/dataAccess/database.js");
 exports.generateRanking = async (message, type) => {
     if (type) type = type.toUpperCase();
     // if type doesn't match, return
-    if (!["EB", "SE", "PE", "GE", "GET", "D"].includes(type)) {
-        throw new Error("Type needs to be one of 'EB' (earnings bonus), 'SE' (soul eggs), 'PE' (eggs of prophecy), 'GE' (golden eggs current), 'GET' (golden eggs total) or 'D' (drones).\nType needs to be included in the command.")
+    if (!["EB", "SE", "PE", "GE", "GET", "D", "LEG"].includes(type)) {
+        throw new Error("Type needs to be one of 'EB' (earnings bonus), 'SE' (soul eggs), 'PE' (eggs of prophecy), 'GE' (golden eggs current), 'GET' (golden eggs total), 'D' (drones) or 'LEG' (Legendaries).\nType needs to be included in the command.")
     }
 
     // get all members from the database
@@ -29,6 +29,7 @@ exports.generateRanking = async (message, type) => {
                 GE: parseInt(player.backup.game.goldenEggsEarned) - parseInt(player.backup.game.goldenEggsSpent),
                 GET: parseInt(player.backup.game.goldenEggsEarned),
                 D: parseInt(player.backup.stats.droneTakedowns),
+                LEG: countLegendaries(player.backup),
             });
         updatedMembers.push(member);
     }
@@ -47,4 +48,14 @@ exports.generateRanking = async (message, type) => {
     // send message
     await message.channel.send({embed: getRankingByTypeMessage(updatedMembers, type)});
     await log(message.client, "Command `rank` completed.");
+}
+
+const countLegendaries = (backup) => {
+    let count = 0;
+    for (const artifact of backup.artifactsDb.inventoryItems) {
+        if (artifact.artifact.spec.rarity === 3) {
+            count++;
+        }
+    }
+    return count;
 }
