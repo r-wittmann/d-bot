@@ -6,7 +6,8 @@ const typeMatching = {
     PE: "Eggs of Prophecy",
     GE: "Golden Eggs Current",
     GET: "Golden Eggs Total",
-    D: "Drones"
+    D: "Drones",
+    LEG: "Legendary Artifacts"
 }
 
 const getRankingTable = (members, type) => {
