@@ -303,4 +303,3 @@ const getEiPlayerBackup = async (eiId) => {
     const playerData = await getPlayerByEiId(eiId);
     return playerData.backup;
 }
-

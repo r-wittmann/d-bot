@@ -4,7 +4,6 @@ const {Routes} = require('discord-api-types/v9');
 const {Client, Intents, Collection} = require('discord.js');
 
 const dotenv = require("dotenv");
-const {log} = require("./services/logService.js");
 
 dotenv.config();
 
