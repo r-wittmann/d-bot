@@ -1,6 +1,21 @@
-const {log} = require("../../services/logService.js");
+const { SlashCommandBuilder } = require('@discordjs/builders');
+
 const {help} = require("../../controllers/help.js");
 
+module.exports = {
+    data: new SlashCommandBuilder()
+        .setName("help")
+        .setDescription("Returns a list of all commands including their descriptions."),
+    async execute(interaction, commands) {
+        try {
+            await help(interaction, commands);
+        } catch (e) {
+            await interaction.editReply({content: "Something went wrong.\n" + e.message, ephemeral: true});
+        }
+    }
+};
+
+/*
 module.exports = {
     name: "help",
     usage: "<command>",
@@ -18,3 +33,4 @@ module.exports = {
         }
     },
 };
+*/
