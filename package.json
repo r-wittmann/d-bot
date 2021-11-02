@@ -1,7 +1,7 @@
 {
   "name": "d-bot",
   "version": "1.0.0",
-  "description": "My first discord bot",
+  "description": "Discord bot for an egg game",
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js"
@@ -10,10 +10,13 @@
   "author": "Rainer Wittmann <r-wittmann@outlook.de>",
   "license": "MIT",
   "dependencies": {
+    "@discordjs/builders": "^0.8.2",
+    "@discordjs/rest": "^0.1.0-canary.0",
     "ascii-table": "0.0.9",
     "atob": "^2.1.2",
     "btoa": "^1.2.1",
-    "discord.js": "^12.5.3",
+    "discord-api-types": "^0.24.0",
+    "discord.js": "^13.3.1",
     "dotenv": "^9.0.2",
     "mongoose": "^5.12.13",
     "node-fetch": "^2.6.1",
@@ -21,7 +24,7 @@
     "protobufjs": "~6.11.2"
   },
   "engines": {
-    "node": "14.x",
+    "node": "17.x",
     "npm": "*"
   }
 }

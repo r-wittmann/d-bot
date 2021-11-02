@@ -92,13 +92,13 @@ exports.checkParticipation = async (message, contractId) => {
     await log(message.client, `Participation was checked for contract \`${contractId}\``);
 }
 
-exports.assignCoopTeams = async (message, contractId) => {
+exports.assignCoopTeams = async (interaction, contractId) => {
 
     // get matching contract
     let assignableContract;
     assignableContract = await getMatchingContract(contractId);
     if (!assignableContract) {
-        throw new Error(`No contract found for contract id \`${contractId}\``);
+        throw new Error(`No contract found for contract id \`${contractId}\``)
     }
 
     // get previous contracts
@@ -117,7 +117,6 @@ exports.assignCoopTeams = async (message, contractId) => {
             member = Object.assign({}, member.toObject(), {backup: player.backup});
             updatedMembers.push(member);
         }
-        await log(message.client, "Player data queried from auxbrain.");
     } catch (e) {
         throw e;
     }
@@ -169,8 +168,6 @@ exports.assignCoopTeams = async (message, contractId) => {
 
     // sort members by EB
     updatedMembers = updatedMembers.sort((a, b) => a.earningsBonus - b.earningsBonus);
-
-    await log(message.client, "EB and contribution potential calculated for all players.")
 
     /**
      * from here on, the groups are assigned
@@ -238,12 +235,10 @@ exports.assignCoopTeams = async (message, contractId) => {
     }
 
     // send a message with suggested teams
-    await message.channel.send({embed: getAssignCoopTeamsMessage(assignableContract.name, contractId, groups)});
-    await log(message.client, `Coop assignment performed for contract \`${contractId}\``);
-
+    await interaction.editReply({embeds: [getAssignCoopTeamsMessage(assignableContract.name, contractId, groups)]});
     // create channels
     for (let i = 0; i < groups.length; i++) {
-        const createdChannel = await message.guild.channels.create(
+        const createdChannel = await interaction.guild.channels.create(
             `group-${i + 1}-${contractId}`, {
                 type: "text",
                 parent: process.env.COOP_CATEGORY_ID,
@@ -256,9 +251,8 @@ exports.assignCoopTeams = async (message, contractId) => {
         for (let member of groups[i]) {
             await createdChannel.send(`<@!${member.discordId}>`);
         }
-        await createdChannel.send(`Use command \`$activatecoop <contract-id> <coop-code> <group-number>\` to add your coop to the list of active coops in <#${process.env.ACTIVE_COOP_CHANNEL_ID}>.`);
+        await createdChannel.send(`Use command \`/activatecoop ${contractId} <coop-code> ${i + 1}\` to add your coop to the list of active coops in <#${process.env.ACTIVE_COOP_CHANNEL_ID}>.`);
     }
-    await log(message.client, `Channels created for contract \`${contractId}\``);
 }
 
 
