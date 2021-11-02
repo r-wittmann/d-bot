@@ -1,7 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-
 const {checkParticipation} = require("../../controllers/contracts.js");
-const {log} = require("../../services/logService.js");
 
 module.exports = {
     data: new SlashCommandBuilder()
