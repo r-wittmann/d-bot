@@ -9,7 +9,7 @@ const {calculateEarningsBonus} = require("../services/utils.js");
 const {log} = require("../services/logService.js");
 const {getMembers} = require("../services/dataAccess/database.js");
 
-exports.checkParticipation = async (message, contractId) => {
+exports.checkParticipation = async (interaction, contractId) => {
 
     // check for the existence of contract id
     let matchingContract;
@@ -24,7 +24,6 @@ exports.checkParticipation = async (message, contractId) => {
             // provided contract id is not in the available contracts
             throw new Error(`Contract with id \`${contractId}\` was not found.`);
         }
-        await log(message.client, "Contract id verified.");
     } catch (e) {
         throw e;
     }
@@ -33,7 +32,6 @@ exports.checkParticipation = async (message, contractId) => {
     let members;
     try {
         members = await getMembers();
-        await log(message.client, "Members queried from database.");
     } catch (e) {
         throw e;
     }
@@ -42,7 +40,6 @@ exports.checkParticipation = async (message, contractId) => {
     let membersWithContracts;
     try {
         membersWithContracts = await getParticipatedContracts(members);
-        await log(message.client, "Participated contracts queried from auxbrain for each member.")
     } catch (e) {
         throw e;
     }
@@ -79,17 +76,16 @@ exports.checkParticipation = async (message, contractId) => {
             needToJoinList.push(member.inGameName);
         }
 
-    // send messages
-    await message.channel.send({embed: getCompletedMessage(contractId, completedList)})
+    // create embeds
+    const embeds = []
+    // get completed message embed
+    embeds.push(getCompletedMessage(contractId, completedList));
+    // get active message embeds
+    embeds.push(...getActiveMessage(contractId, activeList))
+    // get completed message embed
+    embeds.push(getNeedToJoinMessage(contractId, needToJoinList));
 
-    const activeMessageEmbeds = getActiveMessage(contractId, activeList);
-    for (let embed of activeMessageEmbeds) {
-        await message.channel.send({embed})
-    }
-
-    await message.channel.send({embed: getNeedToJoinMessage(contractId, needToJoinList)})
-
-    await log(message.client, `Participation was checked for contract \`${contractId}\``);
+    await interaction.editReply({embeds});
 }
 
 exports.assignCoopTeams = async (interaction, contractId) => {
