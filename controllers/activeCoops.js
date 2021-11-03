@@ -155,7 +155,7 @@ exports.removeActiveCoop = async (message, contractId, coopCode) => {
     await message.channel.send("$updateactivecoops");
 }
 
-exports.getCoopStatus = async (message, contractId, coopCode) => {
+exports.getCoopStatus = async (interaction, contractId, coopCode) => {
     // get contract details
     const contractDetails = await getMatchingContract(contractId);
     if (!contractDetails) {
@@ -165,8 +165,8 @@ exports.getCoopStatus = async (message, contractId, coopCode) => {
     // get coop status
     let coopStatus = await getCoopStatus(contractId, coopCode);
     if (!coopStatus.contributors) {
-        throw new Error(`No coop found with code: \`${coopCode}\``)
+        throw new Error(`No coop found with code: \`${coopCode}\``);
     }
 
-    await message.channel.send({embed: getCoopStatusMessage(contractDetails, coopStatus)})
+    await interaction.editReply({embeds: [getCoopStatusMessage(contractDetails, coopStatus)]});
 }
