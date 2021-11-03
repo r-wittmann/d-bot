@@ -11,11 +11,5 @@ exports.getMemberListMessage = (members, index) => {
         table.addRow(index * 10 + i + 1, member.discordName, member.inGameName);
     })
 
-    return {
-        color: 0x0099ff,
-        title: index === 0
-            ? "Member List"
-            : undefined,
-        description: `\`\`\`\n${table.toString()}\`\`\``,
-    };
+    return `\`\`\`\n${table.toString()}\`\`\``;
 }

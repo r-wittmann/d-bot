@@ -51,15 +51,13 @@ exports.getMembers = async (interaction) => {
             chunkedList.push(membersWithDiscordNames.slice(i, i + 10));
         }
 
-        // create embeds
-        const embeds = [];
-        embeds.push(getMemberListMessage(chunkedList.shift(), 0));
+        await interaction.channel.send(getMemberListMessage(chunkedList.shift(), 0))
 
         for (let i = 0; i < chunkedList.length; i++) {
-            embeds.push(getMemberListMessage(chunkedList[i], i + 1));
+            await interaction.channel.send(getMemberListMessage(chunkedList[i], i + 1))
         }
 
-        await interaction.editReply({embeds});
+        await interaction.editReply({content: "Member List:"});
     } catch (e) {
         throw e;
     }
