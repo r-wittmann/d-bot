@@ -247,7 +247,7 @@ exports.assignCoopTeams = async (interaction, contractId) => {
         for (let member of groups[i]) {
             await createdChannel.send(`<@!${member.discordId}>`);
         }
-        await createdChannel.send(`Use command \`/activatecoop ${contractId} <coop-code> ${i + 1}\` to add your coop to the list of active coops in <#${process.env.ACTIVE_COOP_CHANNEL_ID}>.`);
+        await createdChannel.send(`Copy the following command and add your coop code:\n\`/activatecoop contract-id:${contractId} group-number:${i + 1} coop-code: \`\nThis adds your coop to the list of active coops in <#${process.env.ACTIVE_COOP_CHANNEL_ID}>.`);
     }
 }
 

@@ -1,7 +1,7 @@
+const {getActiveCoopsChannelHeaderMessage} = require("../messageGenerators/activeCoopsChannelHeader.js");
 const {getCoopStatusMessage} = require("../messageGenerators/coopStatusMessage.js");
 const {getActiveCoopsMessage} = require("../messageGenerators/activeCoopsMessage.js");
 const {getCoopStatus, getMatchingContract} = require("../services/dataAccess/auxbrainApi.js");
-const {log} = require("../services/logService.js");
 const {deleteActiveCoopChannel} = require("../services/dataAccess/discord.js");
 const {
     addActiveContract,
@@ -11,7 +11,20 @@ const {
     removeActiveContract
 } = require("../services/dataAccess/database.js");
 
-exports.activateCoop = async (message, contractId, coopCode, groupNumber) => {
+exports.setupActiveCoopChannel = async (interaction) => {
+    // clear old messages
+    const activeCoopChannel = await interaction.client.channels.cache.get(process.env.ACTIVE_COOP_CHANNEL_ID);
+    const channelMessagesMap = await activeCoopChannel.messages.fetch();
+    await activeCoopChannel.bulkDelete(channelMessagesMap);
+
+    await activeCoopChannel.send(getActiveCoopsChannelHeaderMessage());
+
+    await interaction.editReply({content: "Active coop channel was successfully set up."});
+
+    await updateActiveCoops(interaction);
+}
+
+exports.activateCoop = async (interaction, contractId, coopCode, groupNumber) => {
     // coop codes can not be capitalized. Because autocorrect sometimes capitalizes words, we need to decapitalize it
     coopCode = coopCode.toLowerCase();
 
@@ -29,7 +42,6 @@ exports.activateCoop = async (message, contractId, coopCode, groupNumber) => {
         }
 
         activeContract = await addActiveContract(contractId);
-        await log(message.client, `Contract \`${contractId}\` added to active contracts.`);
     }
 
     // check, if the coop code already exists in the list of active coops
@@ -39,18 +51,14 @@ exports.activateCoop = async (message, contractId, coopCode, groupNumber) => {
 
     // add coop to list of active coops
     await updateActiveContract(activeContract.contractId, activeContract.activeCoops.concat([{coopCode, groupNumber}]));
-    await log(message.client, `Coop code \`${coopCode}\` added to active coops.`);
 
-    await log(message.client, "Coop activated.");
-    await message.channel.send("Coop activated.");
+    await interaction.editReply({content: "Coop activated."});
 
-    // call $updateactivecoops to fill active coop message with information
-    await log(message.client, "$updateactivecoops");
+    // call updateActiveCoops to fill active coop message with information
+    await updateActiveCoops(interaction);
 }
 
-exports.updateActiveCoops = async (message) => {
-    // delete calling message
-    message.delete();
+const updateActiveCoops = async (interaction) => {
 
     // get all active contracts from the database
     const activeContracts = await getActiveContracts();
@@ -79,7 +87,7 @@ exports.updateActiveCoops = async (message) => {
     }
 
     // get old messages
-    const activeCoopChannel = await message.client.channels.cache.get(process.env.ACTIVE_COOP_CHANNEL_ID);
+    const activeCoopChannel = await interaction.client.channels.cache.get(process.env.ACTIVE_COOP_CHANNEL_ID);
     const channelMessagesMap = await activeCoopChannel.messages.fetch();
     const channelMessages = Array.from(channelMessagesMap.values());
     const oldActiveContractMessages = channelMessages.filter(m => m.embeds && m.embeds.length !== 0);
@@ -94,13 +102,13 @@ exports.updateActiveCoops = async (message) => {
     while (oldActiveContractMessages.length > 0 && activeContractMessages.length > 0) {
         const oldMessage = oldActiveContractMessages.pop();
         const newMessage = activeContractMessages.pop();
-        await oldMessage.edit({embed: newMessage});
+        await oldMessage.edit({embeds: [newMessage]});
     }
 
     // are any new messages left? send them
     if (activeContractMessages.length > 0) {
         for (let m of activeContractMessages) {
-            await activeCoopChannel.send({embed: m});
+            await activeCoopChannel.send({embeds: [m]});
         }
     }
 
@@ -110,11 +118,11 @@ exports.updateActiveCoops = async (message) => {
             await m.delete();
         }
     }
-
-    await log(message.client, "Active coops updated.");
 }
 
-exports.removeActiveCoop = async (message, contractId, coopCode) => {
+exports.updateActiveCoops = updateActiveCoops;
+
+exports.removeActiveCoop = async (interaction, contractId, coopCode) => {
     // coop codes can not be capitalized. Because autocorrect sometimes capitalizes words, we need to decapitalize it
     coopCode = coopCode.toLowerCase();
 
@@ -134,25 +142,21 @@ exports.removeActiveCoop = async (message, contractId, coopCode) => {
     const updatedActiveCoops = activeContract.activeCoops.filter(coop => coop.coopCode !== coopCode);
     if (updatedActiveCoops.length > 0) {
         await updateActiveContract(activeContract.contractId, updatedActiveCoops);
-        await log(message.client, "Coop removed from active coops.");
-        await message.channel.send("Coop removed from active coops.");
+        await interaction.editReply({content: "Coop removed from active coops."});
     } else {
         await removeActiveContract(contractId);
-        await log(message.client, "Coop and contract removed from active coops.");
-        await message.channel.send("Coop and contract removed from active coops.");
+        await interaction.editReply({content: "Coop and contract removed from active coops."});
     }
 
     // remove coop channel
-    await deleteActiveCoopChannel(message, contractId, removableCoop.groupNumber);
-    await log(message.client, "Coop channel deleted");
+    await deleteActiveCoopChannel(interaction, contractId, removableCoop.groupNumber);
 
     // add coop to completed coop channel
-    const completedCoopChannel = await message.client.channels.cache.get(process.env.COMPLETED_COOP_CHANNEL_ID);
+    const completedCoopChannel = await interaction.client.channels.cache.get(process.env.COMPLETED_COOP_CHANNEL_ID);
     await completedCoopChannel.send(`${contractId}: \`${coopCode}\``);
-    await log(message.client, "Coop added to completed coops");
 
-    // call $updateactivecoops to fill active coop message with information
-    await message.channel.send("$updateactivecoops");
+    // call updateActiveCoops to remove active coop message
+    await updateActiveCoops(interaction);
 }
 
 exports.getCoopStatus = async (interaction, contractId, coopCode) => {

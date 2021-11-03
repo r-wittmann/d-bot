@@ -48,12 +48,13 @@ client.once('ready', () => {
 // setInterval(() => log(client, "$updateactivecoops"), 60000);
 
 client.on('interactionCreate', async interaction => {
-    if (!interaction.isCommand()) return;
+    if (!interaction.isCommand() && !interaction.isButton()) return;
+    const commandName = interaction.commandName || interaction.customId;
 
-    const command = client.commands.get(interaction.commandName);
+    const command = client.commands.get(commandName);
     if (!command) return;
     try {
-        if (interaction.commandName === "help") {
+        if (commandName === "help") {
             await command.execute(interaction, client.commands)
         } else {
             await command.execute(interaction);
