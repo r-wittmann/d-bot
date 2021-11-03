@@ -1,6 +1,28 @@
-const {log} = require("../../services/logService.js");
+const {SlashCommandBuilder} = require('@discordjs/builders');
 const {generateRanking} = require("../../controllers/rank.js");
 
+module.exports = {
+    data: new SlashCommandBuilder()
+        .setName("rank")
+        .setDescription("Returns the current ranking of members on various options.")
+        .addStringOption(option =>
+            option.setName("type")
+                .setDescription("Can be one of 'EB', 'SE', 'PE', 'GE', 'GET', 'D' or 'LEG'.")
+                .setRequired(true)),
+
+    async execute(interaction) {
+        let type = interaction.options.getString("type");
+        await interaction.deferReply();
+
+        try {
+            await generateRanking(interaction, type);
+        } catch (e) {
+            await interaction.editReply({content: "Something went wrong.\n" + e.message, ephemeral: true});
+        }
+    }
+};
+
+/*
 module.exports = {
     name: "rank",
     usage: "<type>",
@@ -24,3 +46,4 @@ module.exports = {
         await waitingMessage.delete();
     },
 };
+*/
