@@ -8,8 +8,14 @@ exports.getMemberListMessage = (members, index) => {
         table.setHeading("", "DISCORD NAME", "EGG INC NAME");
     }
     members.forEach((member, i) => {
-       table.addRow(index * 10 + i + 1, member.discordName, member.inGameName);
+        table.addRow(index * 10 + i + 1, member.discordName, member.inGameName);
     })
 
-    return `\`\`\`\n${table.toString()}\`\`\``;
+    return {
+        color: 0x0099ff,
+        title: index === 0
+            ? "Member List"
+            : undefined,
+        description: `\`\`\`\n${table.toString()}\`\`\``,
+    };
 }

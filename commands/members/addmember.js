@@ -1,6 +1,38 @@
+const {SlashCommandBuilder} = require('@discordjs/builders');
 const {addMember} = require("../../controllers/members.js");
-const {log} = require("../../services/logService.js");
 
+module.exports = {
+    data: new SlashCommandBuilder()
+        .setName("addmember")
+        .setDescription("Adds a new member to the database.")
+        .addStringOption(option =>
+            option.setName("egg-inc-id")
+                .setDescription("The members Egg Inc id (EI...)")
+                .setRequired(true))
+        .addStringOption(option =>
+            option.setName("in-game-name")
+                .setDescription("The members Egg Inc name")
+                .setRequired(true))
+        .addUserOption(option =>
+            option.setName('discord-user')
+                .setDescription('The discord user')
+                .setRequired(true)),
+
+    async execute(interaction) {
+        const eiId = interaction.options.getString("egg-inc-id");
+        const inGameName = interaction.options.getString("in-game-name");
+        const discordUser = interaction.options.getUser("discord-user");
+        await interaction.deferReply();
+
+        try {
+            await addMember(interaction, eiId, inGameName, discordUser);
+        } catch (e) {
+            await interaction.editReply({content: "Something went wrong.\n" + e.message, ephemeral: true});
+        }
+    }
+};
+
+/*
 module.exports = {
     name: "addmember",
     usage: "<EI-id> <in-game-name> <@discord-user>",
@@ -21,3 +53,4 @@ module.exports = {
         }
     },
 };
+*/
