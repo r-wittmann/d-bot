@@ -17,7 +17,6 @@ module.exports = {
             option.setName("group-number")
                 .setDescription("The number of your group.")
                 .setRequired(true)),
-
     async execute(interaction) {
         let contractId = interaction.options.getString("contract-id");
         let coopCode = interaction.options.getString("coop-code");

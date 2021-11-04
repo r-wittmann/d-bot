@@ -13,7 +13,6 @@ module.exports = {
             option.setName("coop-code")
                 .setDescription("The coop code.")
                 .setRequired(true)),
-
     async execute(interaction) {
         let contractId = interaction.options.getString("contract-id");
         let coopCode = interaction.options.getString("coop-code");

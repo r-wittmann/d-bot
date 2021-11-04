@@ -17,7 +17,6 @@ module.exports = {
             option.setName('discord-user')
                 .setDescription('The discord user')
                 .setRequired(true)),
-
     async execute(interaction) {
         const eiId = interaction.options.getString("egg-inc-id");
         const inGameName = interaction.options.getString("in-game-name");

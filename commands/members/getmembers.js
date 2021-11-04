@@ -5,7 +5,6 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName("getmembers")
         .setDescription("Returns a formatted list of all members with their discord and in game names."),
-
     async execute(interaction) {
         await interaction.deferReply();
 

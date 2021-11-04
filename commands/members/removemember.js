@@ -4,7 +4,7 @@ const {removeMember} = require("../../controllers/members.js");
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("removemember")
-        .setDescription("Removes a member from the database. Only ONE of these parameters have to be provided.")
+        .setDescription("Removes a member from the database. Only ONE of these parameters has to be provided.")
         .addStringOption(option =>
             option.setName("egg-inc-id")
                 .setDescription("The members Egg Inc id (EI...)")
@@ -17,7 +17,6 @@ module.exports = {
             option.setName('discord-user')
                 .setDescription('The discord user')
                 .setRequired(false)),
-
     async execute(interaction) {
         const eiId = interaction.options.getString("egg-inc-id") || "";
         const inGameName = interaction.options.getString("in-game-name") || "";

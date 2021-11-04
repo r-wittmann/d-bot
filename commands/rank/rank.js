@@ -9,7 +9,6 @@ module.exports = {
             option.setName("type")
                 .setDescription("Can be one of 'EB', 'SE', 'PE', 'GE', 'GET', 'D' or 'LEG'.")
                 .setRequired(true)),
-
     async execute(interaction) {
         let type = interaction.options.getString("type");
         await interaction.deferReply();

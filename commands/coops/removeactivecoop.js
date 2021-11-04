@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
+const {SlashCommandBuilder} = require('@discordjs/builders');
 const {removeActiveCoop} = require("../../controllers/activeCoops.js");
 
 module.exports = {
@@ -13,7 +13,6 @@ module.exports = {
             option.setName("coop-code")
                 .setDescription("The coop code.")
                 .setRequired(true)),
-
     async execute(interaction) {
         let contractId = interaction.options.getString("contract-id");
         let coopCode = interaction.options.getString("coop-code");

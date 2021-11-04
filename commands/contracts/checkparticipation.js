@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
+const {SlashCommandBuilder} = require('@discordjs/builders');
 const {checkParticipation} = require("../../controllers/contracts.js");
 
 module.exports = {
@@ -9,9 +9,8 @@ module.exports = {
             option.setName("contract_id")
                 .setDescription("The id of the contract")
                 .setRequired(true)),
-
     async execute(interaction) {
-        let contractId = interaction.options.getString("contract_id");
+        let contractId = interaction.options.getString("contract-id");
         await interaction.deferReply();
 
         try {
