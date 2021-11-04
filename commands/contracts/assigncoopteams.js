@@ -1,6 +1,32 @@
+const {SlashCommandBuilder} = require('@discordjs/builders');
 const {assignCoopTeams} = require("../../controllers/contracts.js");
-const {log} = require("../../services/logService.js");
 
+module.exports = {
+    usage: "<contract-id>",
+    help: "Divides all members into fair coop teams for a provided contract. The assignment is based on EB for the " +
+        "first player of each group and on contribution potential for all following players. The coop size of the " +
+        "contract is implicitly taken into account. For each group a channel is created for coop discussions.\n" +
+        "May take a few moments.",
+    data: new SlashCommandBuilder()
+        .setName("assigncoopteams")
+        .setDescription("Creates fair coop teams and channels for discussions")
+        .addStringOption(option =>
+            option.setName("contract-id")
+                .setDescription("The id of the contract")
+                .setRequired(true)),
+    async execute(interaction) {
+        let contractId = interaction.options.getString("contract-id");
+        await interaction.deferReply();
+
+        try {
+            await assignCoopTeams(interaction, contractId);
+        } catch (e) {
+            await interaction.editReply({content: "Something went wrong.\n" + e.message, ephemeral: true});
+        }
+    }
+};
+
+/*
 module.exports = {
     name: "assigncoopteams",
     usage: "<contract-id>",
@@ -27,3 +53,4 @@ module.exports = {
         await waitingMessage.delete();
     },
 };
+*/

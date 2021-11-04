@@ -1,6 +1,32 @@
+const {SlashCommandBuilder} = require('@discordjs/builders');
 const {checkParticipation} = require("../../controllers/contracts.js");
-const {log} = require("../../services/logService.js");
 
+module.exports = {
+    usage: "<contract-id>",
+    help: "Based on the contract id, the bot checks the participation status of all members. It detects players that " +
+        "have already completed the contract, players that are currently active in a coop, and players that have not " +
+        "yet joined a coop.\n" +
+        "May take a few moments.",
+    data: new SlashCommandBuilder()
+        .setName("checkparticipation")
+        .setDescription("Checks the participation status of all members in the provided contract.")
+        .addStringOption(option =>
+            option.setName("contract-id")
+                .setDescription("The id of the contract")
+                .setRequired(true)),
+    async execute(interaction) {
+        let contractId = interaction.options.getString("contract-id");
+        await interaction.deferReply();
+
+        try {
+            await checkParticipation(interaction, contractId);
+        } catch (e) {
+            await interaction.editReply({content: "Something went wrong.\n" + e.message, ephemeral: true});
+        }
+    }
+};
+
+/*
 module.exports = {
     name: "checkparticipation",
     usage: "<contract-id>",
@@ -27,3 +53,4 @@ module.exports = {
         await waitingMessage.delete();
     },
 };
+*/

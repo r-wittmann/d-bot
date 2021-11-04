@@ -1,6 +1,25 @@
+const {SlashCommandBuilder} = require('@discordjs/builders');
 const {updateActiveCoops} = require("../../controllers/activeCoops.js");
-const {log} = require("../../services/logService.js");
 
+module.exports = {
+    help: "Updates the active coops in the active coop channel. This command is called automatically after an active " +
+        "coop was added or removed. Additionally this command is triggered by clicking the update button in the " +
+        "active-coop channel.",
+    data: new SlashCommandBuilder()
+        .setName("updateactivecoops")
+        .setDescription("Updates the active coops in the active coop channel."),
+    async execute(interaction) {
+        await interaction.deferReply({ephemeral: true});
+
+        try {
+            await updateActiveCoops(interaction);
+        } catch (e) {
+            await interaction.editReply({content: "Something went wrong.\n" + e.message, ephemeral: true});
+        }
+    }
+};
+
+/*
 module.exports = {
     name: "updateactivecoops",
     usage: "",
@@ -17,3 +36,4 @@ module.exports = {
         }
     },
 };
+*/

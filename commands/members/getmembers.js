@@ -1,6 +1,26 @@
+const {SlashCommandBuilder} = require('@discordjs/builders');
 const {getMembers} = require("../../controllers/members.js");
-const {log} = require("../../services/logService.js");
 
+module.exports = {
+    help: "Returns a formatted list of all members with their discord and in game names. " +
+        "Discord names are fetched every time the command is called, so they are always up to date. " +
+        "In game names are stored in a database. If you want to update your in game name, please tell Quacking. " +
+        "May take a few moments.",
+    data: new SlashCommandBuilder()
+        .setName("getmembers")
+        .setDescription("Returns a formatted list of all members with their discord and in game names."),
+    async execute(interaction) {
+        await interaction.deferReply();
+
+        try {
+            await getMembers(interaction);
+        } catch (e) {
+            await interaction.editReply({content: "Something went wrong.\n" + e.message, ephemeral: true});
+        }
+    }
+};
+
+/*
 module.exports = {
     name: "getmembers",
     usage: "",
@@ -26,3 +46,4 @@ module.exports = {
         await waitingMessage.delete();
     },
 };
+*/

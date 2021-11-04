@@ -1,11 +1,10 @@
-const {log} = require("../services/logService.js");
 const {calculateEarningsBonus} = require("../services/utils.js");
 const {getPlayerByEiId} = require("../services/dataAccess/auxbrainApi.js");
 const {formatEIValue} = require("../services/auxbrain/units.js");
 const {getRankingByTypeMessage} = require("../messageGenerators/rankMessage.js");
 const {getMembers} = require("../services/dataAccess/database.js");
 
-exports.generateRanking = async (message, type) => {
+exports.generateRanking = async (interaction, type) => {
     if (type) type = type.toUpperCase();
     // if type doesn't match, return
     if (!["EB", "SE", "PE", "GE", "GET", "D", "LEG"].includes(type)) {
@@ -46,8 +45,7 @@ exports.generateRanking = async (message, type) => {
     }
 
     // send message
-    await message.channel.send({embed: getRankingByTypeMessage(updatedMembers, type)});
-    await log(message.client, "Command `rank` completed.");
+    await interaction.editReply({embeds: [getRankingByTypeMessage(updatedMembers, type)]});
 }
 
 const countLegendaries = (backup) => {

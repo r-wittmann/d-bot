@@ -31,11 +31,10 @@ exports.getCompletedMessage = (contractId, completed) => {
 
 exports.getActiveMessage = (contractId, active) => {
     if (active.length === 0) {
-        return {
-            name: "Here is a list of active players:",
-            value: "No one has started a coop yet.",
-            inline: false,
-        };
+        return [{
+            color: 0x0099ff,
+            description: "Here is a list of active players:\nNo one has started a coop yet.",
+        }];
     }
 
     // split the list in chunks of 15 to avoid the message being to long
