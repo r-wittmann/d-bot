@@ -2,6 +2,10 @@ const {SlashCommandBuilder} = require('@discordjs/builders');
 const {activateCoop} = require("../../controllers/activeCoops.js");
 
 module.exports = {
+    usage: "<contract-id> <coop-code> <group-number>",
+    help: "Adds an active coop to the list of active coops in the appropriate channel. Please provide the contract " +
+        "id, the coop code and the group number. You find the group number in the coop assignment or the channel " +
+        "you were pinged in.",
     data: new SlashCommandBuilder()
         .setName("activatecoop")
         .setDescription("Adds an active coop to the list of active coops in the appropriate channel.")

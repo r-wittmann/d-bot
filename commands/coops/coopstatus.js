@@ -2,6 +2,7 @@ const {SlashCommandBuilder} = require('@discordjs/builders');
 const {getCoopStatus} = require("../../controllers/activeCoops.js");
 
 module.exports = {
+    usage: "<contract-id> <coop-code>",
     data: new SlashCommandBuilder()
         .setName("coopstatus")
         .setDescription("Returns the current coop status.")

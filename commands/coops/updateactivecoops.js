@@ -2,6 +2,9 @@ const {SlashCommandBuilder} = require('@discordjs/builders');
 const {updateActiveCoops} = require("../../controllers/activeCoops.js");
 
 module.exports = {
+    help: "Updates the active coops in the active coop channel. This command is called automatically after an active " +
+        "coop was added or removed. Additionally this command is triggered by clicking the update button in the " +
+        "active-coop channel.",
     data: new SlashCommandBuilder()
         .setName("updateactivecoops")
         .setDescription("Updates the active coops in the active coop channel."),

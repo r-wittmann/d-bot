@@ -2,11 +2,16 @@ const {SlashCommandBuilder} = require('@discordjs/builders');
 const {checkParticipation} = require("../../controllers/contracts.js");
 
 module.exports = {
+    usage: "<contract-id>",
+    help: "Based on the contract id, the bot checks the participation status of all members. It detects players that " +
+        "have already completed the contract, players that are currently active in a coop, and players that have not " +
+        "yet joined a coop.\n" +
+        "May take a few moments.",
     data: new SlashCommandBuilder()
         .setName("checkparticipation")
         .setDescription("Checks the participation status of all members in the provided contract.")
         .addStringOption(option =>
-            option.setName("contract_id")
+            option.setName("contract-id")
                 .setDescription("The id of the contract")
                 .setRequired(true)),
     async execute(interaction) {

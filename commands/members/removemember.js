@@ -2,6 +2,9 @@ const {SlashCommandBuilder} = require('@discordjs/builders');
 const {removeMember} = require("../../controllers/members.js");
 
 module.exports = {
+    usage: "<EI-id> <in-game-name> <@discord-user>",
+    help: "Removes a member from the database of players. Please provide the EI-id (EI + 16 numbers), the in game " +
+        "name or mention the user (@UserName). Only ONE of these parameters has to be provided.",
     data: new SlashCommandBuilder()
         .setName("removemember")
         .setDescription("Removes a member from the database. Only ONE of these parameters has to be provided.")

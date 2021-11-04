@@ -2,6 +2,9 @@ const {SlashCommandBuilder} = require('@discordjs/builders');
 const {addMember} = require("../../controllers/members.js");
 
 module.exports = {
+    usage: "<EI-id> <in-game-name> <@discord-user>",
+    help: "Adds a new member to the database of players. Please provide the EI-id (EI + 16 numbers), the in game " +
+        "name and mention the new user (@UserName).\nAll parameters have to be provided.",
     data: new SlashCommandBuilder()
         .setName("addmember")
         .setDescription("Adds a new member to the database.")

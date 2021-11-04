@@ -2,6 +2,8 @@ const {SlashCommandBuilder} = require('@discordjs/builders');
 const {removeActiveCoop} = require("../../controllers/activeCoops.js");
 
 module.exports = {
+    usage: "<contract-id> <coop-code>",
+    help: "Removes an active coop from the list of active coops in the appropriate channel. The discussion channel gets deleted.",
     data: new SlashCommandBuilder()
         .setName("removeactivecoop")
         .setDescription("Removes an active coop from the list of active coops and deletes the discussion channel.")

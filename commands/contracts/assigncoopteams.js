@@ -2,11 +2,16 @@ const {SlashCommandBuilder} = require('@discordjs/builders');
 const {assignCoopTeams} = require("../../controllers/contracts.js");
 
 module.exports = {
+    usage: "<contract-id>",
+    help: "Divides all members into fair coop teams for a provided contract. The assignment is based on EB for the " +
+        "first player of each group and on contribution potential for all following players. The coop size of the " +
+        "contract is implicitly taken into account. For each group a channel is created for coop discussions.\n" +
+        "May take a few moments.",
     data: new SlashCommandBuilder()
         .setName("assigncoopteams")
         .setDescription("Creates fair coop teams and channels for discussions")
         .addStringOption(option =>
-            option.setName("contract_id")
+            option.setName("contract-id")
                 .setDescription("The id of the contract")
                 .setRequired(true)),
     async execute(interaction) {

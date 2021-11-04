@@ -2,6 +2,10 @@ const {SlashCommandBuilder} = require('@discordjs/builders');
 const {generateRanking} = require("../../controllers/rank.js");
 
 module.exports = {
+    usage: "<type>",
+    help: "Returns the current ranking of members on various options. \n<type> can be one of 'EB' (earnings bonus)," +
+        "'SE' (soul eggs), 'PE' (eggs of prophecy), 'GE' (golden eggs current), 'GET' (golden eggs total), 'D' " +
+        "(drones) or 'LEG' (legendary artifacts).",
     data: new SlashCommandBuilder()
         .setName("rank")
         .setDescription("Returns the current ranking of members on various options.")
