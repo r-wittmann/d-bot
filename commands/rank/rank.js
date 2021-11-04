@@ -12,6 +12,13 @@ module.exports = {
         .addStringOption(option =>
             option.setName("type")
                 .setDescription("Can be one of 'EB', 'SE', 'PE', 'GE', 'GET', 'D' or 'LEG'.")
+                .addChoice("Earnings bonus", "EB")
+                .addChoice("Soul eggs", "SE")
+                .addChoice("Eggs of prophecy", "PE")
+                .addChoice("Golden eggs, current", "GE")
+                .addChoice("Golden eggs, total", "GET")
+                .addChoice("Drone take downs", "D")
+                .addChoice("Legendary artifacts", "LEG")
                 .setRequired(true)),
     async execute(interaction) {
         let type = interaction.options.getString("type");
