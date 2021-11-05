@@ -52,7 +52,7 @@ exports.activateCoop = async (interaction, contractId, coopCode, groupNumber) =>
     // add coop to list of active coops
     await updateActiveContract(activeContract.contractId, activeContract.activeCoops.concat([{coopCode, groupNumber}]));
 
-    await interaction.editReply({content: "Coop activated."});
+    await interaction.editReply({content: `Coop activated.\nCoop code is: \`${coopCode}\``});
 
     // call updateActiveCoops to fill active coop message with information
     await updateActiveCoops(interaction);
