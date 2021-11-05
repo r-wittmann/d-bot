@@ -79,6 +79,10 @@ const updateActiveCoops = async (interaction) => {
             coopStatus.groupNumber = activeContract.activeCoops[i].groupNumber;
             coopStatusList.push(coopStatus);
         }
+
+        // sort coops by group number
+        coopStatusList.sort((a, b) => a.groupNumber - b.groupNumber);
+
         updatedActiveContracts.push(Object.assign(
             {},
             activeContract.toObject(),
