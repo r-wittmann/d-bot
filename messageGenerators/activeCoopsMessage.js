@@ -13,6 +13,7 @@ const generateCoopFields = (activeContract) => {
     for (let activeCoop of activeContract.activeCoops) {
         const coopCode = activeCoop.coopIdentifier
         const curCoopSize = activeCoop.contributors.length;
+        const groupNumber = activeCoop.groupNumber;
 
         const eggsShipped = activeCoop.totalAmount;
 
@@ -22,7 +23,7 @@ const generateCoopFields = (activeContract) => {
 
         coopObject.push({
             name: `Coop Code "${coopCode}"`,
-            value: `\`\`\`${curCoopSize}/${maxCoopSize} players\n` +
+            value: `\`\`\`Group number ${groupNumber}, ${curCoopSize}/${maxCoopSize} players\n` +
                 `${progressBar}\n` +
                 `Finishes in: ${secondsToDateString(secondsExpected)}\`\`\`\t\t` +
                 `[Coop Tracker](https://eicoop.netlify.app/${activeContract.identifier}/${coopCode})`,

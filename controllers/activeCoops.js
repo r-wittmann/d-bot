@@ -76,6 +76,7 @@ const updateActiveCoops = async (interaction) => {
         for (let i = 0; i < activeContract.activeCoops.length; i++) {
             const coopCode = activeContract.activeCoops[i].coopCode;
             const coopStatus = await getCoopStatus(activeContract.contractId, coopCode);
+            coopStatus.groupNumber = activeContract.activeCoops[i].groupNumber;
             coopStatusList.push(coopStatus);
         }
         updatedActiveContracts.push(Object.assign(
