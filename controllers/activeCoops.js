@@ -24,13 +24,21 @@ exports.setupActiveCoopChannel = async (interaction) => {
     await updateActiveCoops(interaction);
 }
 
-exports.activateCoop = async (interaction, contractId, coopCode, groupNumber) => {
+exports.activateCoop = async (interaction, coopCode) => {
     // coop codes can not be capitalized. Because autocorrect sometimes capitalizes words, we need to decapitalize it
     coopCode = coopCode.toLowerCase();
 
-    if (!groupNumber) {
-        throw new Error("You seem to have forgotten an argument. Please provide contract id, coop code and group number");
+    // get channel name from the interaction
+    const channelName = interaction.member.guild.channels.cache.get(interaction.channelId).name;
+
+    //check for the correct channel name
+    if (!channelName.startsWith("group-")) {
+        throw new Error("This command should be executed from the respective coop channel. Please do it there.");
     }
+
+    // extract contract id and group number from the channel name
+    const contractId = channelName.split("-").slice(2).join("-");
+    const groupNumber = channelName.split("-")[1];
 
     // check if contract exists in active contracts
     let activeContract = await getActiveContractById(contractId);
