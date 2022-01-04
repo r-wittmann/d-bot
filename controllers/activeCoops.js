@@ -57,6 +57,12 @@ exports.activateCoop = async (interaction, coopCode) => {
         throw new Error(`Coop code \`${coopCode}\` already exists for contract \`${contractId}\`.`);
     }
 
+    // check, if coop exists
+    const coopStatus = await getCoopStatus(contractId,coopCode);
+    if(!coopStatus.contributors) {
+        throw new Error(`Coop with code \`${coopCode}\` is not an active coop in contract \`${contractId}\`.`);
+    }
+
     // add coop to list of active coops
     await updateActiveContract(activeContract.contractId, activeContract.activeCoops.concat([{coopCode, groupNumber}]));
 
