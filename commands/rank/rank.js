@@ -5,13 +5,13 @@ module.exports = {
     usage: "<type>",
     help: "Returns the current ranking of members on various options. \n<type> can be one of 'EB' (earnings bonus)," +
         "'SE' (soul eggs), 'PE' (eggs of prophecy), 'GE' (golden eggs current), 'GET' (golden eggs total), 'D' " +
-        "(drones) or 'LEG' (legendary artifacts).",
+        "(drones), 'LEG' (legendary artifacts) or 'CC' (coop contribution).",
     data: new SlashCommandBuilder()
         .setName("rank")
         .setDescription("Returns the current ranking of members on various options.")
         .addStringOption(option =>
             option.setName("type")
-                .setDescription("Can be one of 'EB', 'SE', 'PE', 'GE', 'GET', 'D' or 'LEG'.")
+                .setDescription("Can be one of 'EB', 'SE', 'PE', 'GE', 'GET', 'D', 'LEG' or 'CC'.")
                 .addChoice("Earnings bonus", "EB")
                 .addChoice("Soul eggs", "SE")
                 .addChoice("Eggs of prophecy", "PE")
@@ -19,6 +19,7 @@ module.exports = {
                 .addChoice("Golden eggs, total", "GET")
                 .addChoice("Drone take downs", "D")
                 .addChoice("Legendary artifacts", "LEG")
+                .addChoice("Coop contribution", "CC")
                 .setRequired(true)),
     async execute(interaction) {
         let type = interaction.options.getString("type");

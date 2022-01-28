@@ -5,8 +5,7 @@ const {
 } = require("../messageGenerators/participationMessage.js");
 const {getAllContractsList, getMatchingContract, getPlayerByEiId} = require("../services/dataAccess/auxbrainApi.js");
 const {getAssignCoopTeamsMessage} = require("../messageGenerators/assignCoopTeamsMessage.js");
-const {calculateEarningsBonus} = require("../services/utils.js");
-const {log} = require("../services/logService.js");
+const {calculateEarningsBonus, calculateContributionPotential} = require("../services/utils.js");
 const {getMembers} = require("../services/dataAccess/database.js");
 
 exports.checkParticipation = async (interaction, contractId) => {
@@ -149,17 +148,7 @@ exports.assignCoopTeams = async (interaction, contractId) => {
 
     // extract contribution potential and add to member object
     updatedMembers = updatedMembers.map(member => {
-        // get contract information from the archive, filtering for the relevant contract ids and coopAllowed
-        const completedContracts = member.backup.contracts.archive.filter(contract =>
-            previousContracts.includes(contract.contract.identifier) &&
-            contract.contract.coopAllowed &&
-            contract.league === 0
-        );
-        const contributions = completedContracts.map(contract => {
-            return contract.coopLastUploadedContribution / contract.lastAmountWhenRewardGiven || 0.1;
-        });
-
-        return Object.assign({}, member, {contributionPotential: contributions.reduce((a, b) => a + b, 0) / contributions.length});
+        return calculateContributionPotential(member, previousContracts);
     });
 
     // sort members by EB
