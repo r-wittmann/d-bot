@@ -122,3 +122,16 @@ exports.getProgressBar = (eggsShipped, finalGoal) => {
     const dash = progressBarLength - hash;
     return `[${"#".repeat(hash)}${"-".repeat(dash)}] ${Math.round(progress * 100)}%`;
 }
+
+exports.convertMilliseconds = (milliseconds) => {
+    const total_seconds = Math.floor(milliseconds / 1000);
+    const total_minutes = Math.floor(total_seconds / 60);
+    const total_hours = Math.floor(total_minutes / 60);
+    const days = Math.floor(total_hours / 24);
+
+    const seconds = total_seconds % 60;
+    const minutes = total_minutes % 60;
+    const hours = total_hours % 24;
+
+    return `${days}, ${hours}:${minutes}:${seconds}`;
+};

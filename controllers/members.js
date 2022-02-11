@@ -1,6 +1,9 @@
 const {getMemberListMessage} = require("../messageGenerators/membersListMessage.js");
 const {getDiscordName} = require("../services/dataAccess/discord.js");
 const {addMember, removeMember, getMembers} = require("../services/dataAccess/database.js");
+const {getPlayerByEiId} = require("../services/dataAccess/auxbrainApi.js");
+const {convertMilliseconds} = require("../services/utils.js");
+const {getMembersActivityMessage} = require("../messageGenerators/membersActivityMessage.js");
 
 exports.addMember = async (interaction, eiId, inGameName, discordUser) => {
     // check the ei id for a match to the general pattern
@@ -61,4 +64,35 @@ exports.getMembers = async (interaction) => {
     } catch (e) {
         throw e;
     }
+}
+
+exports.checkMembersActivity = async (interaction) => {
+    // get all members
+    let updatedMembers = [];
+    try {
+        const members = await getMembers();
+
+        // get player info from auxbrain API
+        for (let member of members) {
+            const player = await getPlayerByEiId(member.eiId);
+            member = Object.assign({}, member.toObject(), {backup: player.backup});
+            updatedMembers.push(member);
+        }
+    } catch (e) {
+        throw e;
+    }
+
+    // calculate time since last activity
+    const membersWithActivity = []
+    updatedMembers.forEach(member => {
+        const lastActivity = new Date(member.backup.approxTime * 1000);
+        const now = new Date();
+        const timeSinceLastActivity = convertMilliseconds(now - lastActivity);
+        membersWithActivity.push(Object.assign({}, member, {timeSinceLastActivity}));
+    })
+
+    const message = getMembersActivityMessage(membersWithActivity);
+    console.log(message);
+
+    await interaction.editReply({embeds: [getMembersActivityMessage(membersWithActivity)]})
 }
