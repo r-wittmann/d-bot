@@ -5,8 +5,9 @@ const {
 } = require("../messageGenerators/participationMessage.js");
 const {getAllContractsList, getMatchingContract, getPlayerByEiId} = require("../services/dataAccess/auxbrainApi.js");
 const {getAssignCoopTeamsMessage} = require("../messageGenerators/assignCoopTeamsMessage.js");
-const {calculateEarningsBonus, calculateContributionPotential} = require("../services/utils.js");
+const {calculateEarningsBonus} = require("../services/utils.js");
 const {getMembers} = require("../services/dataAccess/database.js");
+const shuffle = require("shuffle-array");
 
 exports.checkParticipation = async (interaction, contractId) => {
 
@@ -96,11 +97,6 @@ exports.assignCoopTeams = async (interaction, contractId) => {
         throw new Error(`No contract found for contract id \`${contractId}\``)
     }
 
-    // get previous contracts
-    let previousContracts = await getAllContractsList();
-    previousContracts = previousContracts.slice(-13);
-    previousContracts = previousContracts.map(contract => contract.id);
-
     // get all members and check completion status
     let updatedMembers = [];
     try {
@@ -146,11 +142,6 @@ exports.assignCoopTeams = async (interaction, contractId) => {
         throw new Error("All members seem to have completed this contract.");
     }
 
-    // extract contribution potential and add to member object
-    updatedMembers = updatedMembers.map(member => {
-        return calculateContributionPotential(member, previousContracts);
-    });
-
     // sort members by EB
     updatedMembers = updatedMembers.sort((a, b) => a.earningsBonus - b.earningsBonus);
 
@@ -161,8 +152,7 @@ exports.assignCoopTeams = async (interaction, contractId) => {
      * - matchingContract: The contract to extract the coop size and thereby the number of groups needed
      * First, the number of needed groups is calculated based on member count and coop size
      * Each of the groups gets one player assigned, starting with the highest EB
-     * After that, we loop through all players and assign them based on contribution potential
-     * by assigning the player with the highest cp to the group with the lowest cp, a more or less fair split is performed
+     * After that, the players are assigned randomly
      **/
 
         // calculate the number of coops we need
@@ -176,12 +166,11 @@ exports.assignCoopTeams = async (interaction, contractId) => {
         group.push(updatedMembers.pop());
     })
 
-    // sort remaining players by contribution potential
-    updatedMembers = updatedMembers.sort((a, b) => a.contributionPotential - b.contributionPotential);
+    // randomize the rest of the player list
+    updatedMembers = shuffle(updatedMembers);
 
     // assign remaining players to groups
     while (updatedMembers.length !== 0) {
-        groups = groups.sort((a, b) => sumGroupContributionPotential(a) - sumGroupContributionPotential(b));
         groups.forEach(group => {
             if (updatedMembers.length === 0) return;
             group.push(updatedMembers.pop());
@@ -238,11 +227,6 @@ exports.assignCoopTeams = async (interaction, contractId) => {
         }
         await createdChannel.send(`Use the following command and add your coop code:\n\`/activatecoop coop-code: \`\nThis adds your coop to the list of active coops in <#${process.env.ACTIVE_COOP_CHANNEL_ID}>.`);
     }
-}
-
-
-const sumGroupContributionPotential = (group) => {
-    return group.reduce((a, b) => a + b.contributionPotential, 0);
 }
 
 const getParticipatedContracts = async (members) => {

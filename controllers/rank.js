@@ -7,8 +7,8 @@ const {getMembers} = require("../services/dataAccess/database.js");
 exports.generateRanking = async (interaction, type) => {
     if (type) type = type.toUpperCase();
     // if type doesn't match, return
-    if (!["EB", "SE", "PE", "GE", "GET", "D", "LEG", "CC"].includes(type)) {
-        throw new Error("Type needs to be one of 'EB' (earnings bonus), 'SE' (soul eggs), 'PE' (eggs of prophecy), 'GE' (golden eggs current), 'GET' (golden eggs total), 'D' (drones), 'LEG' (legendaries) or 'CC' (coop contribution).\nType needs to be included in the command.")
+    if (!["EB", "SE", "PE", "GE", "GET", "D", "LEG"].includes(type)) {
+        throw new Error("Type needs to be one of 'EB' (earnings bonus), 'SE' (soul eggs), 'PE' (eggs of prophecy), 'GE' (golden eggs current), 'GET' (golden eggs total), 'D' (drones) or 'LEG' (legendaries).\nType needs to be included in the command.")
     }
 
     // get all members from the database
@@ -34,7 +34,6 @@ exports.generateRanking = async (interaction, type) => {
                 GET: parseInt(player.backup.game.goldenEggsEarned),
                 D: parseInt(player.backup.stats.droneTakedowns),
                 LEG: countLegendaries(player.backup),
-                CC: calculateCoopContribution(player, previousContracts),
             });
         updatedMembers.push(member);
     }
@@ -62,9 +61,4 @@ const countLegendaries = (backup) => {
         }
     }
     return count;
-}
-
-const calculateCoopContribution = (member, previousContracts) => {
-    const updatedMember = calculateContributionPotential(member, previousContracts);
-    return Math.round(updatedMember.contributionPotential * 100).toFixed(2);
 }

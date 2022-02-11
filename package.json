@@ -12,6 +12,7 @@
   "dependencies": {
     "@discordjs/builders": "^0.8.2",
     "@discordjs/rest": "^0.1.0-canary.0",
+    "array-shuffle": "^3.0.0",
     "ascii-table": "0.0.9",
     "atob": "^2.1.2",
     "btoa": "^1.2.1",

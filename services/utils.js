@@ -47,28 +47,6 @@ exports.calculateEarningsBonus = (backup) => {
     return 100 * soulEggs * soulEggBonus * (1 + prophecyEggBonus) ** prophecyEggs;
 }
 
-exports.calculateContributionPotential = (member, previousContracts) => {
-
-    // get contract information from the archive, filtering for the relevant contract ids and coopAllowed
-    const completedContracts = member.backup.contracts.archive.filter(contract =>
-        previousContracts.includes(contract.contract.identifier) &&
-        contract.contract.coopAllowed &&
-        contract.league === 0 &&
-        // this contract had a goal bug, that messes up the whole calculation
-        contract.contract.identifier !== 'artifact-repair'
-    );
-
-    const contributions = completedContracts.map(contract => {
-        const memberContribution = contract.coopLastUploadedContribution;
-        const lastGoal = contract.lastAmountWhenRewardGiven;
-        const maxCoopSize = contract.contract.maxCoopSize;
-
-        return memberContribution / (lastGoal / maxCoopSize) || 0.01;
-    });
-
-    return Object.assign({}, member, {contributionPotential: contributions.reduce((a, b) => a + b, 0) / contributions.length});
-}
-
 const calculateEggsPerHour = (coopStatus) => {
     let eggsPerSecond = 0;
     coopStatus.contributors.forEach(contributor => eggsPerSecond += contributor.contributionRate);

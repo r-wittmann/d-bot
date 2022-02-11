@@ -8,7 +8,6 @@ const typeMatching = {
     GET: "Golden Eggs Total",
     D: "Drones",
     LEG: "Legendary Artifacts",
-    CC: "Coop Contribution",
 }
 
 const getRankingTable = (members, type) => {
@@ -26,12 +25,5 @@ exports.getRankingByTypeMessage = (members, type) => {
         color: 0x0099ff,
         title: `Ranking by ${typeMatching[type]}`,
         description: getRankingTable(members, type),
-        footer: {
-            text: type === "CC"
-                ? "Values in %. The last ten coops are considered for this calculation.\n" +
-                  "Ask Quacking, if you want to know what these numbers mean 😅"
-                : ""
-        }
-
     };
 }
