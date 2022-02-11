@@ -58,15 +58,18 @@ exports.activateCoop = async (interaction, coopCode) => {
     }
 
     // check, if coop exists
-    const coopStatus = await getCoopStatus(contractId,coopCode);
-    if(!coopStatus.contributors) {
+    const coopStatus = await getCoopStatus(contractId, coopCode);
+    if (!coopStatus.contributors) {
         throw new Error(`Coop with code \`${coopCode}\` is not an active coop in contract \`${contractId}\`.`);
     }
 
     // add coop to list of active coops
     await updateActiveContract(activeContract.contractId, activeContract.activeCoops.concat([{coopCode, groupNumber}]));
 
-    await interaction.editReply({content: `Coop activated.\nCoop code is: \`${coopCode}\``});
+    await interaction.editReply({
+        content: `Coop activated.\nCoop code is: \`${coopCode}\`\n
+            https://eicoop.netlify.app/${contractId}/${coopCode}/`
+    });
 
     // call updateActiveCoops to fill active coop message with information
     await updateActiveCoops(interaction);
