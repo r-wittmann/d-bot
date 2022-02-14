@@ -27,8 +27,8 @@ exports.generateRanking = async (interaction, type) => {
             {},
             member.toObject(),
             {
-                SE: parseInt(player.backup.game.soulEggsD),
-                PE: parseInt(player.backup.game.eggsOfProphecy),
+                SE: player.backup.game.soulEggsD,
+                PE: player.backup.game.eggsOfProphecy,
                 EB: calculateEarningsBonus(player.backup),
                 GE: parseInt(player.backup.game.goldenEggsEarned) - parseInt(player.backup.game.goldenEggsSpent),
                 GET: parseInt(player.backup.game.goldenEggsEarned),
