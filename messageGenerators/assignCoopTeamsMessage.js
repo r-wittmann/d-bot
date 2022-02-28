@@ -11,7 +11,7 @@ exports.getAssignCoopTeamsMessage = (contractName, contractId, groups) => {
     return {
         color: 0x0099ff,
         title: contractName,
-        description: "Based on earning bonus and the chance, I suggest the following teams",
+        description: "Based on earning bonus and chance, I suggest the following teams",
         fields: generateGroupFields(groups),
         timestamp: new Date()
     };

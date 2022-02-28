@@ -171,7 +171,7 @@ exports.assignCoopTeams = async (interaction, contractId) => {
 
     // assign remaining players to groups
     while (updatedMembers.length !== 0) {
-        groups.forEach(group => {
+        groups.reverse().forEach(group => {
             if (updatedMembers.length === 0) return;
             group.push(updatedMembers.pop());
         })
