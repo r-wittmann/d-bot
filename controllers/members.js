@@ -1,6 +1,8 @@
+const {MessageAttachment} = require("discord.js");
 const {getMemberListMessage} = require("../messageGenerators/membersListMessage.js");
 const {getDiscordName} = require("../services/dataAccess/discord.js");
 const {addMember, removeMember, getMembers} = require("../services/dataAccess/database.js");
+const {getPlayerByEiId, getCoopStatus} = require("../services/dataAccess/auxbrainApi.js");
 
 exports.addMember = async (interaction, eiId, inGameName, discordUser) => {
     // check the ei id for a match to the general pattern
@@ -61,4 +63,54 @@ exports.getMembers = async (interaction) => {
     } catch (e) {
         throw e;
     }
+}
+
+exports.getMemberEBHistory = async (interaction, discordUser) => {
+    // get all members from database to extract correlating EI id
+    const members = await getMembers();
+    const member = members.find(m => m.discordId === discordUser.id)
+
+    // get contracts archive from EI API
+    const player = await getPlayerByEiId(member.eiId);
+    const updatedMember = Object.assign({}, member.toObject(), {backup: player.backup});
+
+    // extract all coop contracts from player backup and remove unneeded information
+    const coopContracts = updatedMember.backup.contracts.archive
+        .filter(contract => contract.coopIdentifier && contract.coopIdentifier !== "")
+        .map(contract => {
+            const startDate = new Date(contract.timeAccepted * 1000);
+            return {
+                contractId: contract.contract.identifier,
+                coopCode: contract.coopIdentifier,
+                startDate,
+            }
+        });
+
+    // loop through all coops and get coop status from EI API
+    const updatedCoopContracts = [];
+    for (const contract of coopContracts) {
+        const coopStatus = await getCoopStatus(contract.contractId, contract.coopCode);
+        // if everyone left the coop, the contributors attribute is missing
+        if (!coopStatus.contributors) continue;
+
+        const player = coopStatus.contributors.find(contributor => contributor.userId === member.eiId);
+        // if the player in question left the coop, they are no longer in the contributors list
+        if (!player) continue;
+
+        const soulPower = player.soulPower;
+        const playerEB = Math.round(Math.pow(10, soulPower));
+        updatedCoopContracts.push(Object.assign({}, contract, {playerEB}));
+    }
+
+    let returnText = "date,EB\n";
+    updatedCoopContracts.forEach(contract => {
+        returnText += `${contract.startDate.toISOString()},${BigInt(contract.playerEB).toString()}\n`
+    })
+
+    await interaction.editReply({
+        content: `${member.inGameName}'s EB history:\n`,
+        files: [
+            new MessageAttachment(Buffer.from(returnText), `${member.inGameName}.txt`),
+        ]
+    })
 }
