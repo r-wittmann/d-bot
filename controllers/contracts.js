@@ -165,13 +165,14 @@ exports.assignCoopTeams = async (interaction, contractId) => {
     groups.forEach(group => {
         group.push(updatedMembers.pop());
     })
+    groups = groups.reverse();
 
     // randomize the rest of the player list
     updatedMembers = shuffle(updatedMembers);
 
     // assign remaining players to groups
     while (updatedMembers.length !== 0) {
-        groups.reverse().forEach(group => {
+        groups.forEach(group => {
             if (updatedMembers.length === 0) return;
             group.push(updatedMembers.pop());
         })
