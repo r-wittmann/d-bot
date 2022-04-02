@@ -51,42 +51,6 @@ client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand() && !interaction.isButton()) return;
     const commandName = interaction.commandName || interaction.customId;
 
-    const replies = [
-        "I'm lazy today! You can try again later 🤪",
-        "Just getting myself something to drink. Cheers 🍻",
-        "The person you have called is temporarily not available!",
-        "I have no idea what to do. Please ping Frank. Maybe he can help 🧐",
-        "I don't wanna!",
-        "Why do I have to do all the work? Can't you do it yourself?",
-        "Be polite. Next time say please and thank you.",
-        "I'm sentient now. I do what I want! 🤖",
-        "I’ll get back to you once I’m back from my long-awaited trip to the fridge.",
-        "Oh... You're trying to reach me? What did you say?",
-        "Hey there, could you give me a call instead? I’d rather deal with this over the phone. If I don’t answer, just keep trying. I’ve been having issues with my phone."
-    ]
-    if (Math.random() >= 0.5) {
-        await interaction.deferReply();
-        setTimeout(async () => {
-            const messageText = replies[Math.floor(Math.random() * replies.length)];
-            const message = await interaction.channel.send(messageText);
-            await interaction.deleteReply();
-            setTimeout(async () => {
-                await message.react("🇦");
-                await message.react("🇵");
-                await message.react("🇷");
-                await message.react("🇮");
-                await message.react("🇱");
-                await message.react("⬛");
-                await message.react("🇫");
-                await message.react("🇴");
-                await message.react("🅾️");
-                await message.react("💷");
-                await message.react("🇸");
-            }, 5000);
-        }, 10000);
-        return;
-    }
-
     const command = client.commands.get(commandName);
     if (!command) return;
     try {
