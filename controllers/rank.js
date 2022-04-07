@@ -1,23 +1,14 @@
-const {calculateEarningsBonus, calculateContributionPotential} = require("../services/utils.js");
-const {getPlayerByEiId, getAllContractsList} = require("../services/dataAccess/auxbrainApi.js");
+const {calculateEarningsBonus} = require("../services/utils.js");
+const {getPlayerByEiId} = require("../services/dataAccess/auxbrainApi.js");
 const {formatEIValue} = require("../services/auxbrain/units.js");
-const {getRankingByTypeMessage} = require("../messageGenerators/rankMessage.js");
+const {getRankingByTypeMessage, getRankingOverview} = require("../messageGenerators/rankMessage.js");
 const {getMembers} = require("../services/dataAccess/database.js");
 
 exports.generateRanking = async (interaction, type) => {
-    if (type) type = type.toUpperCase();
-    // if type doesn't match, return
-    if (!["EB", "SE", "PE", "GE", "GET", "D", "LEG"].includes(type)) {
-        throw new Error("Type needs to be one of 'EB' (earnings bonus), 'SE' (soul eggs), 'PE' (eggs of prophecy), 'GE' (golden eggs current), 'GET' (golden eggs total), 'D' (drones) or 'LEG' (legendaries).\nType needs to be included in the command.")
-    }
+    const types = ["EB", "SE", "PE", "GE", "D", "LEG", "PRES"];
 
     // get all members from the database
     const members = await getMembers();
-
-    // get previous contracts
-    let previousContracts = await getAllContractsList();
-    previousContracts = previousContracts.slice(-13);
-    previousContracts = previousContracts.map(contract => contract.id);
 
     // get player info from auxbrain API
     let updatedMembers = [];
@@ -27,30 +18,48 @@ exports.generateRanking = async (interaction, type) => {
             {},
             member.toObject(),
             {
-                SE: player.backup.game.soulEggsD,
-                PE: player.backup.game.eggsOfProphecy,
-                EB: calculateEarningsBonus(player.backup),
-                GE: parseInt(player.backup.game.goldenEggsEarned) - parseInt(player.backup.game.goldenEggsSpent),
-                GET: parseInt(player.backup.game.goldenEggsEarned),
-                D: parseInt(player.backup.stats.droneTakedowns),
-                LEG: countLegendaries(player.backup),
+                SE: {count: player.backup.game.soulEggsD},
+                PE: {count: player.backup.game.eggsOfProphecy},
+                EB: {count: calculateEarningsBonus(player.backup)},
+                GE: {count: parseInt(player.backup.game.goldenEggsEarned)},
+                D: {count: parseInt(player.backup.stats.droneTakedowns)},
+                LEG: {count: countLegendaries(player.backup)},
+                PRES: {count: player.backup.stats.numPrestiges},
             });
         updatedMembers.push(member);
     }
 
-    // sort members by the given type
-    updatedMembers.sort((a, b) => b[type] - a[type]);
+    if (type) {
+        // sort members by the given type
+        updatedMembers.sort((a, b) => b[type].count - a[type].count);
 
-    // if type is SE or EB, transform to in game notation
-    if (["SE", "EB"].includes(type)) {
-        updatedMembers.map(member => {
-            member[type] = formatEIValue(member[type]);
-            return member;
+        // if type is SE, EB or GE, transform to in game notation
+        if (["SE", "EB", "GE"].includes(type)) {
+            updatedMembers.map(member => {
+                member[type].count = formatEIValue(member[type].count);
+                return member;
+            })
+        }
+
+        // send message
+        await interaction.editReply({embeds: [getRankingByTypeMessage(updatedMembers, type)]});
+    } else {
+        let requester = updatedMembers.find(member => member.discordId === interaction.user.id);
+
+        types.forEach(t => {
+            // sort members by the given type
+            const ranking = updatedMembers.sort((a, b) => b[t].count - a[t].count);
+            // add rank of that type to the requester object
+            requester[t].rank = ranking.findIndex(m => m.eiId === requester.eiId) + 1;
+            // if type is SE, EB or GE, transform to in game notation
+            if (["SE", "EB", "GE"].includes(t)) {
+                requester[t].count = formatEIValue(requester[t].count);
+            }
         })
-    }
 
-    // send message
-    await interaction.editReply({embeds: [getRankingByTypeMessage(updatedMembers, type)]});
+        // send message
+        await interaction.editReply({embeds: [getRankingOverview(requester)]});
+    }
 }
 
 const countLegendaries = (backup) => {
