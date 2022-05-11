@@ -21,6 +21,21 @@ exports.addMember = async (eiId, discordId, inGameName) => {
     await mongoose.disconnect();
 }
 
+exports.pauseMember = async (eiId, discordId, inGameName) => {
+    await openDatabaseConnection();
+    const member = await Member.findOne({$or: [{eiId}, {discordId}, {inGameName}]});
+
+    if (!member) {
+        await mongoose.disconnect();
+        return;
+    }
+
+    member.paused = !member.paused;
+    await member.save();
+    await mongoose.disconnect();
+    return member;
+}
+
 exports.removeMember = async (eiId, discordId, inGameName) => {
     await openDatabaseConnection();
     const member = await Member.findOneAndRemove({$or: [{eiId}, {discordId}, {inGameName}]});
@@ -31,6 +46,13 @@ exports.removeMember = async (eiId, discordId, inGameName) => {
 exports.getMembers = async () => {
     await openDatabaseConnection();
     const members = await Member.find({});
+    await mongoose.disconnect();
+    return members;
+}
+
+exports.getActiveMembers = async () => {
+    await openDatabaseConnection();
+    const members = await Member.find({$or: [{paused: false}, {paused: undefined}]});
     await mongoose.disconnect();
     return members;
 }

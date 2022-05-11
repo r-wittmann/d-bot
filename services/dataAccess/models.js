@@ -3,7 +3,8 @@ const mongoose = require("mongoose");
 const memberSchema = mongoose.Schema({
     eiId: {type: String, unique: true},
     discordId: {type: String, unique: true},
-    inGameName: String
+    inGameName: String,
+    paused: {type: Boolean, default: false}
 })
 const Member = mongoose.model("Member", memberSchema);
 exports.Member = Member;

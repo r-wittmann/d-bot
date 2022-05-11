@@ -1,7 +1,7 @@
 const {MessageAttachment} = require("discord.js");
 const {getMemberListMessage} = require("../messageGenerators/membersListMessage.js");
 const {getDiscordName} = require("../services/dataAccess/discord.js");
-const {addMember, removeMember, getMembers} = require("../services/dataAccess/database.js");
+const {addMember, removeMember, getMembers, pauseMember} = require("../services/dataAccess/database.js");
 const {getPlayerByEiId, getCoopStatus} = require("../services/dataAccess/auxbrainApi.js");
 
 exports.addMember = async (interaction, eiId, inGameName, discordUser) => {
@@ -16,6 +16,21 @@ exports.addMember = async (interaction, eiId, inGameName, discordUser) => {
     } catch (e) {
         throw e;
     }
+}
+
+exports.pauseMember = async (interaction, eiId, inGameName, discordId) => {
+    if (eiId === "" && inGameName === "" && discordId === "") {
+        throw new Error("At least one parameter is required for this command");
+    }
+
+    try {
+        const member = await pauseMember(eiId, discordId, inGameName);
+        if (!member) throw new Error(`User not found. Provided parameters: egg-inc-id\`${eiId}\`, in-game-name\`${inGameName}\`, discord-user\`${discordId}\`,`);
+        await interaction.editReply({content: `Membership of ${member.inGameName} was set to ${member.paused ? "paused": "active"}. A paused membership implies that the member is not assigned to coops during coop assignment.`})
+    } catch (e) {
+        throw e;
+    }
+
 }
 
 exports.removeMember = async (interaction, eiId, inGameName, discordId) => {

@@ -6,7 +6,7 @@ const {
 const {getAllContractsList, getMatchingContract, getPlayerByEiId} = require("../services/dataAccess/auxbrainApi.js");
 const {getAssignCoopTeamsMessage} = require("../messageGenerators/assignCoopTeamsMessage.js");
 const {calculateEarningsBonus} = require("../services/utils.js");
-const {getMembers} = require("../services/dataAccess/database.js");
+const {getMembers, getActiveMembers} = require("../services/dataAccess/database.js");
 const shuffle = require("shuffle-array");
 
 exports.checkParticipation = async (interaction, contractId) => {
@@ -100,7 +100,7 @@ exports.assignCoopTeams = async (interaction, contractId) => {
     // get all members and check completion status
     let updatedMembers = [];
     try {
-        const members = await getMembers();
+        const members = await getActiveMembers();
 
         // get player info from auxbrain API
         for (let member of members) {
