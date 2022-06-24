@@ -38,17 +38,18 @@ exports.getPlayerByEiId = async (id) => {
     const requestPayload = {
         rinfo: basicRequestInfo(id),
         eiUserId: id,
+        deviceId: 'franks_team_bot',
         clientVersion: CLIENT_VERSION,
     };
     const encodedRequestPayload = encodeService.encodeMessage(EggIncFirstContactRequest, requestPayload);
     let encodedResponsePayload;
     try {
-        encodedResponsePayload = await EIApiRequest('/ei/first_contact', encodedRequestPayload);
+        encodedResponsePayload = await EIApiRequest('/ei/bot_first_contact', encodedRequestPayload);
     } catch (e) {
         throw e;
     }
 
-    return await decodeService.decodeMessage(EggIncFirstContactResponse, encodedResponsePayload, true);
+    return await decodeService.decodeMessage(EggIncFirstContactResponse, encodedResponsePayload, false);
 }
 
 exports.getCoopStatus = async (contractId, coopCode) => {
