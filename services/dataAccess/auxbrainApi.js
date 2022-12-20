@@ -58,7 +58,7 @@ exports.getCoopStatus = async (contractId, coopCode) => {
     const ContractCoopStatusResponse = root.lookupType("ei.ContractCoopStatusResponse");
 
     // set user id to "" as it is required in the message, but the content doesn't matter
-    const userId = "";
+    const userId = "EI4615396943986688";
     const requestPayload = {
         rinfo: basicRequestInfo(userId),
         contractIdentifier: contractId,

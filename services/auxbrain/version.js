@@ -1,4 +1,4 @@
-exports.APP_VERSION = '1.20.10';
-exports.APP_BUILD = '1.20.10.0';
-exports.CLIENT_VERSION = 32;
+exports.APP_VERSION = '1.25.4';
+exports.APP_BUILD = '111225';
+exports.CLIENT_VERSION = 45;
 exports.PLATFORM_STRING = 'IOS';
